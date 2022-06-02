@@ -1,0 +1,6 @@
+dist/*
+build/*
+config/*
+src/*
+node_modules/*
+webpack**
