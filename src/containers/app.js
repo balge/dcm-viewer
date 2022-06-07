@@ -7,6 +7,7 @@ import api from '../api'
 export default class App extends Component {
   // 1左键，2右键， 4中间滚轮click
   state = {
+    precent: 0,
     //选择的本地图片
     fileList: [],
     //接口返回图片
@@ -50,24 +51,24 @@ export default class App extends Component {
         path: this.state.outputFile.path,
         path_name: this.state.outputFile.path_name,
       }
-      api.post('/api/demo/calculate', params).then(res => {
+      api.post('/api/demo/calculate', params).then((res) => {
         message.info(res.data.data.msg)
       })
       this.setState({
-        message: ''
+        message: '',
       })
       this.setState({
         calcLoading: true,
       })
       const timer = setInterval(() => {
-        waitFnc(params).then(res => {
-          if(res.data.code === 200) {
+        waitFnc(params).then((res) => {
+          if (res.data.code === 200) {
             clearInterval(timer)
             this.setState({
-              calcLoading: false
+              calcLoading: false,
             })
             this.setState({
-              message: res.data.data.msg
+              message: res.data.data.msg,
             })
           }
         })
@@ -86,6 +87,12 @@ export default class App extends Component {
       this.setState({
         uploading: true,
       })
+      const precentTimer = setInterval(() => {
+        const precent = this.state.precent + Math.ceil(Math.random() * 5)
+        this.setState({
+          precent: precent >= 90 ? 90 : precent,
+        })
+      }, 300)
       api
         .post('/api/demo/upload', formData)
         .then((res) => {
@@ -99,6 +106,10 @@ export default class App extends Component {
           })
           this.setState({
             imageIds: urls,
+          })
+          clearInterval(precentTimer)
+          this.setState({
+            precent: 0,
           })
         })
         .catch(() => {
@@ -152,6 +163,18 @@ export default class App extends Component {
                   {this.state.uploading ? 'Uploading' : 'Start Upload'}
                 </Button>
               </div>
+              {this.state.precent ? (
+                <div className="w-full block mt-3 relative h-1 bg-gray-300">
+                  <div
+                    className="absolute left-0 top-0 bottom-0 bg-blue-400 transition-all"
+                    style={{
+                      width: `${this.state.precent}%`,
+                    }}
+                  ></div>
+                </div>
+              ) : (
+                ''
+              )}
               {this.state.imageIds.length ? (
                 <div className="mt-4">
                   <CornerstoneViewport
@@ -252,7 +275,9 @@ export default class App extends Component {
                   >
                     计算
                   </Button>
-                  <div className="text-sm text-center text-black mt-3">{this.state.message}</div>
+                  <div className="text-sm text-center text-black mt-3">
+                    {this.state.message}
+                  </div>
                 </Form.Item>
               </Form>
             </div>
