@@ -3,6 +3,7 @@ import formatDA from './formatDA'
 import formatTM from './formatTM'
 import formatNumberPrecision from './formatNumberPrecision'
 import isValidNumber from './isValidNumber'
+import TaskQueue from './requestLimit'
 
 const helpers = {
   formatPN,
@@ -10,6 +11,7 @@ const helpers = {
   formatTM,
   formatNumberPrecision,
   isValidNumber,
+  TaskQueue,
 }
 
 export { helpers }

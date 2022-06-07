@@ -1,11 +1,11 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/bin/yarn add react-dropzone --save
+  /usr/local/bin/node /usr/local/bin/yarn add ljh-request-limit --save
 
 PATH: 
-  /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/bytom-wuchengba/Documents/arcanist/arcanist/bin:/Users/bytom-wuchengba/Documents/flutter/bin
+  /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Users/mac/Documents/arc/arcanist/bin
 
 Yarn version: 
-  1.7.0
+  1.22.4
 
 Node version: 
   15.3.0
@@ -14,8 +14,8 @@ Platform:
   darwin x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/react-dropzone: ETIMEDOUT
-      at Timeout._onTimeout (/usr/local/lib/node_modules/yarn/lib/cli.js:135339:19)
+  Error: https://registry.yarnpkg.com/ljh-request-limit: ETIMEDOUT
+      at Timeout._onTimeout (/usr/local/lib/node_modules/yarn/lib/cli.js:141408:19)
       at listOnTimeout (node:internal/timers:556:17)
       at processTimers (node:internal/timers:499:7)
 

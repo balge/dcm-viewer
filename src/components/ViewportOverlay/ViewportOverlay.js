@@ -62,8 +62,8 @@ class ViewportOverlay extends PureComponent {
     const normal = (
       <React.Fragment>
         <div className="bottom-left overlay-element">
-          {posx >= 0 && posy >= 0 && !isout && <div>X: {posx}</div>}
-          {posx >= 0 && posy >= 0 && !isout && <div>Y: {posy}</div>}
+          {posx >= 0 && posy >= 0 && posx <= 510 && posy <= 510 && !isout && <div>X: {posx}</div>}
+          {posx >= 0 && posy >= 0 && posx <= 510 && posy <= 510 && !isout && <div>Y: {posy}</div>}
           <div>Z: {imageIndex}</div>
           <div>Zoom: {zoomPercentage}%</div>
         </div>

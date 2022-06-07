@@ -1,17 +1,19 @@
 import React, { Component } from 'react'
 import CornerstoneViewport from '~/components/index'
-import { Slider, message, Form, Input, Button, Upload } from 'antd'
-import { UploadOutlined } from '@ant-design/icons'
+import { Slider, message, Form, Input, Button } from 'antd'
 import api from '../api'
+import { helpers } from '../helpers'
+
+const { TaskQueue } = helpers
 
 export default class App extends Component {
   // 1左键，2右键， 4中间滚轮click
   state = {
     precent: 0,
-    //选择的本地图片
-    fileList: [],
-    //接口返回图片
-    outputFile: {},
+    paths: {
+      path: '',
+      path_name: ''
+    },
     //canves渲染的图片
     imageIds: [
       // 'wadouri://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032220.11.dcm',
@@ -43,13 +45,12 @@ export default class App extends Component {
   }
   render() {
     const onFinish = (values) => {
-      console.log('Success:', values)
       const params = {
         x: values.posx,
         y: values.posy,
         z: values.posz,
-        path: this.state.outputFile.path,
-        path_name: this.state.outputFile.path_name,
+        path: this.state.paths.path,
+        path_name: this.state.paths.path_name,
       }
       api.post('/api/demo/calculate', params).then((res) => {
         message.info(res.data.data.msg)
@@ -79,58 +80,48 @@ export default class App extends Component {
       return api.post('/api/demo/waiting', params)
     }
 
-    const handleUpload = () => {
-      const formData = new FormData()
-      this.state.fileList.forEach((file) => {
-        formData.append('files[]', file)
-      })
+    const onChange = (e) => {
+      console.log(e.target.files, 'files')
       this.setState({
         uploading: true,
+        imageIdIndex: 0,
       })
-      const precentTimer = setInterval(() => {
-        const precent = this.state.precent + Math.ceil(Math.random() * 5)
+      const len = e.target.files.length
+      let tasks = []
+      let count = 0
+      for (let i = 0; i < len; i++) {
+        let formData = new FormData()
+        formData.append('files[]', e.target.files[i])
+        tasks.push(() => new Promise((resolve, reject) => api.post('/api/demo/upload', formData).then(res => {
+          count++
+          this.setState({
+            precent: count / len * 100,
+          })
+          var xhr = new XMLHttpRequest(); 
+          xhr.open('GET', `http://121.196.101.101:80${res.data.data.img[0].url}`);
+          xhr.send('');
+          return resolve(res.data.data)
+        })))
+      }
+      new TaskQueue(tasks, 20, 2, r => {
         this.setState({
-          precent: precent >= 90 ? 90 : precent,
+          uploading: false,
         })
-      }, 300)
-      api
-        .post('/api/demo/upload', formData)
-        .then((res) => {
-          const imgs = res.data.data.img || []
-          this.setState({
-            outputFile: res.data.data || {},
-          })
-          const urls = []
-          imgs.forEach((item) => {
-            urls.push(`wadouri://121.196.101.101:80${item.url}`)
-          })
-          this.setState({
-            imageIds: urls,
-          })
-          clearInterval(precentTimer)
-          this.setState({
-            precent: 0,
-          })
+        const urls = []
+        r.forEach((item) => {
+          urls.push(`wadouri://121.196.101.101:80${item.img[0].url}`)
         })
-        .catch(() => {
-          message.error(`file upload failed`)
-        })
-        .finally(() => {
-          this.setState({
-            uploading: false,
-          })
-        })
-    }
-    const props = {
-      multiple: true,
-      beforeUpload: (file, fileList) => {
         this.setState({
-          fileList: fileList,
+          imageIds: urls,
         })
-        return false
-      },
+        this.setState({
+          paths: {
+            path: r[0].path,
+            path_name: r[0].path_name
+          }
+        })
+      });
     }
-
     return (
       <div className="w-full">
         <header className="bg-white mb-4">
@@ -147,21 +138,8 @@ export default class App extends Component {
               基本内容
             </div>
             <div className="px-4 py-2">
-              <div className="flex content-start">
-                <Upload {...props} className="flex-1">
-                  <Button className="w-full block" icon={<UploadOutlined />}>
-                    Select File
-                  </Button>
-                </Upload>
-                <Button
-                  className="ml-4 w-36"
-                  type="primary"
-                  onClick={handleUpload}
-                  disabled={this.state.fileList.length === 0}
-                  loading={this.state.uploading}
-                >
-                  {this.state.uploading ? 'Uploading' : 'Start Upload'}
-                </Button>
+              <div>
+                <input type='file' multiple onChange={onChange} />
               </div>
               {this.state.precent ? (
                 <div className="w-full block mt-3 relative h-1 bg-gray-300">
