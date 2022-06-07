@@ -1,43 +1,24 @@
 import React, { Component } from 'react'
-import CornerstoneViewport from '../components/index'
-import { Slider, Upload, message, Form, Input, Button } from 'antd'
-import { InboxOutlined } from '@ant-design/icons'
-const { Dragger } = Upload
-
-const props = {
-  name: 'file',
-  multiple: true,
-  action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
-
-  onChange(info) {
-    const { status } = info.file
-
-    if (status !== 'uploading') {
-      console.log(info.file, info.fileList)
-    }
-
-    if (status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully.`)
-    } else if (status === 'error') {
-      message.error(`${info.file.name} file upload failed.`)
-    }
-  },
-
-  onDrop(e) {
-    console.log('Dropped files', e.dataTransfer.files)
-  },
-}
-const onFinish = (values) => {
-  console.log('Success:', values)
-}
-
-const onFinishFailed = (errorInfo) => {
-  console.log('Failed:', errorInfo)
-}
+import CornerstoneViewport from '~/components/index'
+import { Slider, message, Form, Input, Button, Upload } from 'antd'
+import { UploadOutlined } from '@ant-design/icons'
+import api from '../api'
 
 export default class App extends Component {
   // 1左键，2右键， 4中间滚轮click
   state = {
+    //选择的本地图片
+    fileList: [],
+    //接口返回图片
+    outputFile: {},
+    //canves渲染的图片
+    imageIds: [
+      // 'wadouri://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032220.11.dcm',
+      // 'wadouri://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032220.12.dcm',
+      // 'wadouri://121.196.101.101/upload/SE3/IM1.DCM',
+    ],
+    uploading: false,
+    calcLoading: false,
     imageIdIndex: 0,
     tools: [
       // Mouse
@@ -58,13 +39,87 @@ export default class App extends Component {
       { name: 'ZoomTouchPinch', mode: 'active' },
       // { name: 'StackScrollMultiTouch', mode: 'active' },
     ],
-    imageIds: [
-      'wadouri://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032220.11.dcm',
-      'wadouri://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032220.12.dcm',
-      'wadouri://121.196.101.101/upload/SE3/IM1.DCM',
-    ],
   }
   render() {
+    const onFinish = (values) => {
+      console.log('Success:', values)
+      const params = {
+        x: values.posx,
+        y: values.posy,
+        z: values.posz,
+        path: this.state.outputFile.path,
+        path_name: this.state.outputFile.path_name,
+      }
+      api.post('/api/demo/calculate', params).then(res => {
+        message.info(res.data.data.msg)
+      })
+      this.setState({
+        message: ''
+      })
+      this.setState({
+        calcLoading: true,
+      })
+      const timer = setInterval(() => {
+        waitFnc(params).then(res => {
+          if(res.data.code === 200) {
+            clearInterval(timer)
+            this.setState({
+              calcLoading: false
+            })
+            this.setState({
+              message: res.data.data.msg
+            })
+          }
+        })
+      }, 2000)
+    }
+
+    const waitFnc = (params) => {
+      return api.post('/api/demo/waiting', params)
+    }
+
+    const handleUpload = () => {
+      const formData = new FormData()
+      this.state.fileList.forEach((file) => {
+        formData.append('files[]', file)
+      })
+      this.setState({
+        uploading: true,
+      })
+      api
+        .post('/api/demo/upload', formData)
+        .then((res) => {
+          const imgs = res.data.data.img || []
+          this.setState({
+            outputFile: res.data.data || {},
+          })
+          const urls = []
+          imgs.forEach((item) => {
+            urls.push(`wadouri://121.196.101.101:80${item.url}`)
+          })
+          this.setState({
+            imageIds: urls,
+          })
+        })
+        .catch(() => {
+          message.error(`file upload failed`)
+        })
+        .finally(() => {
+          this.setState({
+            uploading: false,
+          })
+        })
+    }
+    const props = {
+      multiple: true,
+      beforeUpload: (file, fileList) => {
+        this.setState({
+          fileList: fileList,
+        })
+        return false
+      },
+    }
+
     return (
       <div className="w-full">
         <header className="bg-white mb-4">
@@ -81,27 +136,35 @@ export default class App extends Component {
               基本内容
             </div>
             <div className="px-4 py-2">
-              <Dragger {...props}>
-                <p className="ant-upload-drag-icon">
-                  <InboxOutlined />
-                </p>
-                <p className="ant-upload-text">
-                  Click or drag file to this area to upload
-                </p>
-                <p className="ant-upload-hint">
-                  Support for a single or bulk upload. Strictly prohibit from
-                  uploading company data or other band files
-                </p>
-              </Dragger>
+              <div className="flex content-start">
+                <Upload {...props} className="flex-1">
+                  <Button className="w-full block" icon={<UploadOutlined />}>
+                    Select File
+                  </Button>
+                </Upload>
+                <Button
+                  className="ml-4 w-36"
+                  type="primary"
+                  onClick={handleUpload}
+                  disabled={this.state.fileList.length === 0}
+                  loading={this.state.uploading}
+                >
+                  {this.state.uploading ? 'Uploading' : 'Start Upload'}
+                </Button>
+              </div>
               {this.state.imageIds.length ? (
                 <div className="mt-4">
                   <CornerstoneViewport
                     tools={this.state.tools}
                     imageIds={this.state.imageIds}
                     imageIdIndex={this.state.imageIdIndex}
-                    style={{ maxWidth: '100%', height: '500px', flex: '1' }}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      flex: '1',
+                    }}
                   />
-                  <div className=" mt-4">
+                  <div className="mt-4">
                     <Slider
                       min={0}
                       max={this.state.imageIds.length - 1}
@@ -115,7 +178,7 @@ export default class App extends Component {
                   </div>
                 </div>
               ) : (
-                <div className="w-full text-center">请选择图片</div>
+                <div className="w-full text-center mt-4">请选择图片</div>
               )}
             </div>
           </div>
@@ -136,7 +199,6 @@ export default class App extends Component {
                   remember: true,
                 }}
                 onFinish={onFinish}
-                onFinishFailed={onFinishFailed}
                 autoComplete="off"
               >
                 <Form.Item
@@ -181,9 +243,16 @@ export default class App extends Component {
                     span: 20,
                   }}
                 >
-                  <Button size="large" type="primary" htmlType="submit">
+                  <Button
+                    size="large"
+                    type="primary"
+                    htmlType="submit"
+                    disabled={!this.state.imageIds.length}
+                    loading={this.state.calcLoading}
+                  >
                     计算
                   </Button>
+                  <div className="text-sm text-center text-black mt-3">{this.state.message}</div>
                 </Form.Item>
               </Form>
             </div>

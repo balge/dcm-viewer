@@ -124,10 +124,7 @@ class CornerstoneViewport extends Component {
       isOverlayVisible,
       posx: 0,
       posy: 0,
-      // Orientation Markers
-      rotationDegrees: undefined,
-      isFlippedVertically: undefined,
-      isFlippedHorizontally: undefined,
+      isout: false,
     }
 
     this._validateExternalEventsListeners()
@@ -369,6 +366,7 @@ class CornerstoneViewport extends Component {
       isOverlayVisible,
       posx,
       posy,
+      isout,
     } = this.state
     const imageId = imageIds[imageIdIndex]
     console.log()
@@ -384,6 +382,7 @@ class CornerstoneViewport extends Component {
           windowCenter={windowCenter}
           posx={posx}
           posy={posy}
+          isout={isout}
           imageId={imageId}
         />
       )
@@ -594,9 +593,6 @@ class CornerstoneViewport extends Component {
       scale: viewport.scale,
       windowCenter: viewport.voi.windowCenter,
       windowWidth: viewport.voi.windowWidth,
-      rotationDegrees: viewport.rotation,
-      isFlippedVertically: viewport.vflip,
-      isFlippedHorizontally: viewport.hflip,
     })
   }
 
@@ -650,7 +646,6 @@ class CornerstoneViewport extends Component {
   }
 
   handleCanvesEventListener = () => {
-    console.log(this.canves, cornerstone.canvasToPixel, 2222222)
     this.element.addEventListener('mousemove', (evt) => {
       const rect = this.element.getBoundingClientRect()
 
@@ -663,6 +658,12 @@ class CornerstoneViewport extends Component {
       this.setState({
         posx: parseInt(worldPos.x),
         posy: parseInt(worldPos.y),
+        isout: false,
+      })
+    })
+    this.element.addEventListener('mouseout', (evt) => {
+      this.setState({
+        isout: true,
       })
     })
   }

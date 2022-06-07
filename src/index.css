@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.ant-upload-list-item {
+    display: none !important;
+}
+.ant-upload {width: 100%;}

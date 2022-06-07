@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "antd": "^4.20.7",
+    "axios": "^0.27.2",
     "classnames": "^2.3.1",
     "cornerstone-core": "^2.6.1",
     "cornerstone-math": "^0.1.9",

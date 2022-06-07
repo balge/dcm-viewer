@@ -49,51 +49,23 @@ class ViewportOverlay extends PureComponent {
   }
 
   render() {
-    const { imageId, scale, windowWidth, windowCenter, posx, posy } = this.props
+    const { imageId, scale, posx, posy } = this.props
 
     if (!imageId) {
       return null
     }
 
     const zoomPercentage = formatNumberPrecision(scale * 100, 0)
-    const seriesMetadata =
-      cornerstone.metaData.get('generalSeriesModule', imageId) || {}
-    const imagePlaneModule =
-      cornerstone.metaData.get('imagePlaneModule', imageId) || {}
-    const { rows, columns, sliceThickness, sliceLocation } = imagePlaneModule
-    const { seriesNumber, seriesDescription } = seriesMetadata
 
-    const generalStudyModule =
-      cornerstone.metaData.get('generalStudyModule', imageId) || {}
-    const { studyDate, studyTime, studyDescription } = generalStudyModule
-
-    const patientModule =
-      cornerstone.metaData.get('patientModule', imageId) || {}
-    const { patientId, patientName } = patientModule
-
-    const generalImageModule =
-      cornerstone.metaData.get('generalImageModule', imageId) || {}
-    const { instanceNumber } = generalImageModule
-
-    const cineModule = cornerstone.metaData.get('cineModule', imageId) || {}
-    console.log(
-      imagePlaneModule,
-      generalStudyModule,
-      patientModule,
-      generalImageModule,
-      seriesMetadata,
-      'imagePlaneModule'
-    )
-
-    const { imageIndex, stackSize } = this.props
-
+    const { imageIndex, isout } = this.props
+    console.log(isout, 'isout')
     const normal = (
       <React.Fragment>
         <div className="bottom-left overlay-element">
-          <div>Zoom: {zoomPercentage}%</div>
-          <div>X: {posx}</div>
-          <div>Y: {posy}</div>
+          {posx >= 0 && posy >= 0 && !isout && <div>X: {posx}</div>}
+          {posx >= 0 && posy >= 0 && !isout && <div>Y: {posy}</div>}
           <div>Z: {imageIndex}</div>
+          <div>Zoom: {zoomPercentage}%</div>
         </div>
       </React.Fragment>
     )
