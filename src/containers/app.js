@@ -3,6 +3,7 @@ import CornerstoneViewport from '~/components/index'
 import { Slider, message, Form, Input, Button } from 'antd'
 import api from '../api'
 import { helpers } from '../helpers'
+import cornerstone from 'cornerstone-core'
 
 const { TaskQueue } = helpers
 
@@ -102,12 +103,16 @@ export default class App extends Component {
                 this.setState({
                   precent: (count / len) * 100,
                 })
-                var xhr = new XMLHttpRequest()
-                xhr.open(
-                  'GET',
-                  `http://121.196.101.101:80${res.data.data.img[0].url}`
+                cornerstone.loadAndCacheImage(
+                  `wadouri://121.196.101.101:80${res.data.data.img[0].url}`,
+                  { addToBeginning: true, priority: -5 }
                 )
-                xhr.send('')
+                // var xhr = new XMLHttpRequest()
+                // xhr.open(
+                //   'GET',
+                //   `http://121.196.101.101:80${res.data.data.img[0].url}`
+                // )
+                // xhr.send('')
                 return resolve(res.data.data)
               })
             )
