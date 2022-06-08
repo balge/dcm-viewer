@@ -83,6 +83,7 @@ export default class App extends Component {
 
     const onChange = (e) => {
       console.log(e.target.files, 'files')
+      const timestamp = Math.floor(new Date().getTime() / 1000).toString()
       const len = e.target.files.length
       this.setState({
         uploading: true,
@@ -95,6 +96,7 @@ export default class App extends Component {
       for (let i = 0; i < len; i++) {
         let formData = new FormData()
         formData.append('files[]', e.target.files[i])
+        formData.append('path', timestamp)
         tasks.push(
           () =>
             new Promise((resolve, reject) =>
@@ -150,7 +152,15 @@ export default class App extends Component {
             </div>
             <div className="px-4 py-2">
               <div className="relative w-full">
-                <Button type="primary" size="large" loading={this.state.uploading}>{this.state.uploading ? `${this.state.fileLen}张图片上传` : '选择图片'}</Button>
+                <Button
+                  type="primary"
+                  size="large"
+                  loading={this.state.uploading}
+                >
+                  {this.state.uploading
+                    ? `${this.state.fileLen}张图片上传`
+                    : '选择图片'}
+                </Button>
                 <input
                   className="opacity-0 absolute left-0 top-0  bottom-0 right-0 z-10"
                   type="file"
@@ -196,7 +206,9 @@ export default class App extends Component {
                   </div>
                 </div>
               ) : (
-                <div className="w-full text-center mt-4">{ this.state.uploading ? '图像加载中...' : '请选择DCM图像' }</div>
+                <div className="w-full text-center mt-4">
+                  {this.state.uploading ? '图像加载中...' : '请选择DCM图像'}
+                </div>
               )}
             </div>
           </div>
