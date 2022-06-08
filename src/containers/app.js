@@ -10,9 +10,10 @@ export default class App extends Component {
   // 1左键，2右键， 4中间滚轮click
   state = {
     precent: 0,
+    fileLen: 0,
     paths: {
       path: '',
-      path_name: ''
+      path_name: '',
     },
     //canves渲染的图片
     imageIds: [
@@ -82,28 +83,38 @@ export default class App extends Component {
 
     const onChange = (e) => {
       console.log(e.target.files, 'files')
+      const len = e.target.files.length
       this.setState({
         uploading: true,
         imageIdIndex: 0,
+        fileLen: len,
+        precent: 1,
       })
-      const len = e.target.files.length
       let tasks = []
       let count = 0
       for (let i = 0; i < len; i++) {
         let formData = new FormData()
         formData.append('files[]', e.target.files[i])
-        tasks.push(() => new Promise((resolve, reject) => api.post('/api/demo/upload', formData).then(res => {
-          count++
-          this.setState({
-            precent: count / len * 100,
-          })
-          var xhr = new XMLHttpRequest(); 
-          xhr.open('GET', `http://121.196.101.101:80${res.data.data.img[0].url}`);
-          xhr.send('');
-          return resolve(res.data.data)
-        })))
+        tasks.push(
+          () =>
+            new Promise((resolve, reject) =>
+              api.post('/api/demo/upload', formData).then((res) => {
+                count++
+                this.setState({
+                  precent: (count / len) * 100,
+                })
+                var xhr = new XMLHttpRequest()
+                xhr.open(
+                  'GET',
+                  `http://121.196.101.101:80${res.data.data.img[0].url}`
+                )
+                xhr.send('')
+                return resolve(res.data.data)
+              })
+            )
+        )
       }
-      new TaskQueue(tasks, 20, 2, r => {
+      new TaskQueue(tasks, 20, 2, (r) => {
         this.setState({
           uploading: false,
         })
@@ -117,10 +128,10 @@ export default class App extends Component {
         this.setState({
           paths: {
             path: r[0].path,
-            path_name: r[0].path_name
-          }
+            path_name: r[0].path_name,
+          },
         })
-      });
+      })
     }
     return (
       <div className="w-full">
@@ -138,10 +149,16 @@ export default class App extends Component {
               基本内容
             </div>
             <div className="px-4 py-2">
-              <div>
-                <input type='file' multiple onChange={onChange} />
+              <div className="relative w-full">
+                <Button type="primary" size="large" loading={this.state.uploading}>{this.state.uploading ? `${this.state.fileLen}张图片上传` : '选择图片'}</Button>
+                <input
+                  className="opacity-0 absolute left-0 top-0  bottom-0 right-0 z-10"
+                  type="file"
+                  multiple
+                  onChange={onChange}
+                />
               </div>
-              {this.state.precent ? (
+              {this.state.precent && this.state.uploading ? (
                 <div className="w-full block mt-3 relative h-1 bg-gray-300">
                   <div
                     className="absolute left-0 top-0 bottom-0 bg-blue-400 transition-all"
@@ -179,7 +196,7 @@ export default class App extends Component {
                   </div>
                 </div>
               ) : (
-                <div className="w-full text-center mt-4">请选择图片</div>
+                <div className="w-full text-center mt-4">{ this.state.uploading ? '图像加载中...' : '请选择DCM图像' }</div>
               )}
             </div>
           </div>
