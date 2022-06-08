@@ -58,8 +58,6 @@ export default class App extends Component {
       })
       this.setState({
         message: '',
-      })
-      this.setState({
         calcLoading: true,
       })
       const timer = setInterval(() => {
@@ -68,8 +66,6 @@ export default class App extends Component {
             clearInterval(timer)
             this.setState({
               calcLoading: false,
-            })
-            this.setState({
               message: res.data.data.msg,
             })
           }
@@ -97,6 +93,7 @@ export default class App extends Component {
         let formData = new FormData()
         formData.append('files[]', e.target.files[i])
         formData.append('path', timestamp)
+        formData.append('index', i)
         tasks.push(
           () =>
             new Promise((resolve, reject) =>
@@ -117,17 +114,14 @@ export default class App extends Component {
         )
       }
       new TaskQueue(tasks, 20, 2, (r) => {
-        this.setState({
-          uploading: false,
-        })
+        r.sort((a, b) => a.index - b.index)
         const urls = []
         r.forEach((item) => {
           urls.push(`wadouri://121.196.101.101:80${item.img[0].url}`)
         })
         this.setState({
           imageIds: urls,
-        })
-        this.setState({
+          uploading: false,
           paths: {
             path: r[0].path,
             path_name: r[0].path_name,
@@ -206,7 +200,7 @@ export default class App extends Component {
                   </div>
                 </div>
               ) : (
-                <div className="w-full text-center mt-4">
+                <div className="w-full mt-4">
                   {this.state.uploading ? '图像加载中...' : '请选择DCM图像'}
                 </div>
               )}
