@@ -106,8 +106,12 @@ export default class App extends Component {
                 cornerstone.loadAndCacheImage(
                   `wadouri://121.196.101.101:80${res.data.data.img[0].url}`,
                   { addToBeginning: true, priority: -5 }
-                )
-                return resolve(res.data.data)
+                ).then(image => {
+                  return resolve({
+                    ...res.data.data,
+                    index: image.data.string('x00200013')
+                  })
+                })
               })
             )
         )
@@ -201,7 +205,7 @@ export default class App extends Component {
                               },
                             },
                             {
-                              invert: true,
+                              invert: false,
                             }
                           )
 
