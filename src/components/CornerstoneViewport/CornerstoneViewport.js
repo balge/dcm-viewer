@@ -137,7 +137,6 @@ class CornerstoneViewport extends Component {
 
     this.numImagesLoaded = 0
   }
-
   // ~~ LIFECYCLE
   async componentDidMount() {
     const {
@@ -162,7 +161,7 @@ class CornerstoneViewport extends Component {
     // ~~ EVENTS: ELEMENT
     this._bindInternalElementEventListeners()
     this._bindExternalEventListeners('element')
-
+    
     try {
       // Setup "Stack State"
       cornerstoneTools.clearToolState(this.element, 'stack')
@@ -207,6 +206,7 @@ class CornerstoneViewport extends Component {
         const validFrameRate = Math.max(frameRate, 1)
         cornerstoneTools.playClip(this.element, validFrameRate)
       }
+
 
       _addAndConfigureInitialToolsForElement(tools, this.element)
       _trySetActiveTool(this.element, this.props.activeTool)
@@ -369,7 +369,6 @@ class CornerstoneViewport extends Component {
       isout,
     } = this.state
     const imageId = imageIds[imageIdIndex]
-    console.log()
     return (
       imageId &&
       windowWidth &&
@@ -588,13 +587,20 @@ class CornerstoneViewport extends Component {
 
   onImageRendered = (event) => {
     const viewport = event.detail.viewport
-
     this.setState({
       scale: viewport.scale,
       windowCenter: viewport.voi.windowCenter,
       windowWidth: viewport.voi.windowWidth,
     })
   }
+
+  // windowChange = () => {
+  //   let viewport = cornerstone.getViewport(this.element)
+  //   console.log(viewport, this.element, 'viewport')
+  //   viewport.vio.windowWidth = 1500
+  //   viewport.vio.windowCenter = -400
+  //   cornerstone.setViewport(this.element, viewport)
+  // }
 
   onNewImageHandler = (event, callback) => {
     const { imageId } = event.detail.image

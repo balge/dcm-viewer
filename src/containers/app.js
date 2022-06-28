@@ -107,12 +107,6 @@ export default class App extends Component {
                   `wadouri://121.196.101.101:80${res.data.data.img[0].url}`,
                   { addToBeginning: true, priority: -5 }
                 )
-                // var xhr = new XMLHttpRequest()
-                // xhr.open(
-                //   'GET',
-                //   `http://121.196.101.101:80${res.data.data.img[0].url}`
-                // )
-                // xhr.send('')
                 return resolve(res.data.data)
               })
             )
@@ -185,6 +179,39 @@ export default class App extends Component {
                     tools={this.state.tools}
                     imageIds={this.state.imageIds}
                     imageIdIndex={this.state.imageIdIndex}
+                    onElementEnabled={(elementEnabledEvt) => {
+                      const cornerstoneElement =
+                        elementEnabledEvt.detail.element
+                      // Save this for later
+                      this.setState({
+                        cornerstoneElement,
+                      })
+                      // Wait for image to render, then invert it
+                      cornerstoneElement.addEventListener(
+                        'cornerstoneimagerendered',
+                        (imageRenderedEvent) => {
+                          const viewport = imageRenderedEvent.detail.viewport
+                          const invertedViewport = Object.assign(
+                            {},
+                            {
+                              ...viewport,
+                              voi: {
+                                windowWidth: 1500,
+                                windowCenter: -400,
+                              },
+                            },
+                            {
+                              invert: true,
+                            }
+                          )
+
+                          cornerstone.setViewport(
+                            cornerstoneElement,
+                            invertedViewport
+                          )
+                        }
+                      )
+                    }}
                     style={{
                       width: '100%',
                       height: '100%',
