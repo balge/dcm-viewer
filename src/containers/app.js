@@ -1,29 +1,37 @@
 import React, { Component } from 'react'
 import CornerstoneViewport from '~/components/index'
-import { Slider, message, Form, Input, Button } from 'antd'
+import { Slider, message, Form, InputNumber, Button, Steps } from 'antd'
 import api from '../api'
 import { helpers } from '../helpers'
 import cornerstone from 'cornerstone-core'
+import { FormattedMessage } from 'react-intl'
+import { CloudUploadOutlined } from '@ant-design/icons'
+import Cookies from 'js-cookie'
 
+const { Step } = Steps
 const { TaskQueue } = helpers
+let timer = null
 
 export default class App extends Component {
   // 1左键，2右键， 4中间滚轮click
   state = {
+    currStep: null,
     precent: 0,
     fileLen: 0,
     paths: {
       path: '',
       path_name: '',
     },
+    stopParam: {},
     //canves渲染的图片
-    imageIds: [
-      // 'wadouri://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032220.11.dcm',
-      // 'wadouri://s3.amazonaws.com/lury/PTCTStudy/1.3.6.1.4.1.25403.52237031786.3872.20100510032220.12.dcm',
-      // 'wadouri://121.196.101.101/upload/SE3/IM1.DCM',
-    ],
+    imageIds: [],
     uploading: false,
     calcLoading: false,
+    tasks: {
+      task1: '',
+      task2: '',
+      task3: '',
+    },
     imageIdIndex: 0,
     tools: [
       // Mouse
@@ -58,20 +66,46 @@ export default class App extends Component {
         message.info(res.data.data.msg)
       })
       this.setState({
-        message: '',
+        tasks: {
+          task1: '',
+          task2: '',
+          task3: '',
+        },
+        stopParam: params,
         calcLoading: true,
+        currStep: 0,
       })
-      const timer = setInterval(() => {
+      timer = setInterval(() => {
         waitFnc(params).then((res) => {
           if (res.data.code === 200) {
             clearInterval(timer)
             this.setState({
               calcLoading: false,
-              message: res.data.data.msg,
+              currStep: 2,
+              tasks: {
+                task1: res.data.data.task01,
+                task2: res.data.data.task02,
+                task3: res.data.data.task03,
+              },
             })
           }
         })
       }, 2000)
+    }
+
+    const onCancel = () => {
+      api.post('/api/demo/stop', {
+        ...this.state.stopParam
+      }).then(res => {
+        
+        
+      }).catch(() => {
+
+      })
+      this.setState({
+        calcLoading: false,
+      })
+      clearInterval(timer)
     }
 
     const waitFnc = (params) => {
@@ -132,22 +166,28 @@ export default class App extends Component {
         })
       })
     }
+
+    const changeLang = () => {
+      const lang = Cookies.get('lang')
+      if(lang === 'zh-cn') {
+        Cookies.set('lang', 'en-us')
+      } else {
+        Cookies.set('lang', 'zh-cn')
+      }
+      location.reload()
+    }
+
     return (
-      <div className="w-full">
+      <div className="mx-auto py-6" style={{ width: 1200 }}>
         <header className="bg-white mb-4">
-          <div className="px-4 py-6">
-            <h1 className="text-3xl font-bold leading-tight text-gray-900">
-              肺结节良恶性诊断
-              <span className="block">V1.0</span>
-            </h1>
-          </div>
+          <h1 className="text-4xl font-bold leading-tight text-gray-900 text-center mb-6">
+            <FormattedMessage id="title"></FormattedMessage>
+            <div className="float-right text-sm cursor-pointer text-gray-500" onClick={changeLang}><FormattedMessage id="lang"></FormattedMessage></div>
+          </h1>
         </header>
-        <main className="w-full min-w-[1000px] mx-auto grid grid-cols-2 gap-10 px-4">
-          <div className="rounded border border-solid border-gray-100">
-            <div className="px-4 py-2 text-base text-black text-opacity-80 bg-gray-50">
-              基本内容
-            </div>
-            <div className="px-4 py-2">
+        <main className="w-full mx-auto grid grid-cols-2 gap-10 px-4">
+          <div>
+            <div className="p-6">
               <div className="relative w-full">
                 <Button
                   type="primary"
@@ -155,12 +195,13 @@ export default class App extends Component {
                   loading={this.state.uploading}
                 >
                   {this.state.uploading
-                    ? `${this.state.fileLen}张图片上传`
-                    : '选择图片'}
+                    ? <span>{this.state.fileLen} <FormattedMessage id="uploadLoading"></FormattedMessage></span>
+                    : <FormattedMessage id="uploadNormal"></FormattedMessage>}
                 </Button>
                 <input
                   className="opacity-0 absolute left-0 top-0  bottom-0 right-0 z-10"
                   type="file"
+                  webkitdirectory="webkitdirectory"
                   multiple
                   onChange={onChange}
                 />
@@ -236,90 +277,108 @@ export default class App extends Component {
                   </div>
                 </div>
               ) : (
-                <div className="w-full mt-4">
-                  {this.state.uploading ? '图像加载中...' : '请选择DCM图像'}
+                <div className="w-full mt-4 bg-gray-400 bg-opacity-10 rounded-xl py-8 text-center relative">
+                  <div className="text-gray-500 text-5xl"><CloudUploadOutlined /></div>
+                  <div className="text-lg text-gray-500 mt-4">{this.state.uploading ? <div><FormattedMessage id="gen"></FormattedMessage></div> : <div>
+                    <p><FormattedMessage id="uploadDrag"></FormattedMessage></p>
+                    <Button
+                      type="primary"
+                      size="large"
+                    >
+                      <FormattedMessage id="uploadNormal"></FormattedMessage>
+                    </Button>
+                    <p className="text-base mt-2"><FormattedMessage id="uploadInput"></FormattedMessage></p>
+                  </div> }</div>
+                  {
+                    !this.state.uploading && <input
+                    className="opacity-0 absolute left-0 top-0  bottom-0 right-0 z-10"
+                    type="file"
+                    webkitdirectory="webkitdirectory"
+                    multiple
+                    onChange={onChange}
+                  />
+                  }
                 </div>
               )}
             </div>
           </div>
-          <div className="rounded border border-solid border-gray-100">
-            <div className="px-4 py-2 text-base text-black text-opacity-80 bg-gray-50">
-              操作
-            </div>
-            <div className="px-4 py-2">
+          <div>
+            <div className="p-6">
               <Form
                 name="pos"
-                labelCol={{
-                  span: 4,
-                }}
-                wrapperCol={{
-                  span: 20,
-                }}
-                initialValues={{
-                  remember: true,
-                }}
+                layout="inline"
                 onFinish={onFinish}
                 autoComplete="off"
               >
                 <Form.Item
-                  label="x轴"
+                  label={<FormattedMessage id="x"></FormattedMessage>}
                   name="posx"
                   rules={[
                     {
                       required: true,
-                      message: '请输入x轴坐标',
                     },
                   ]}
                 >
-                  <Input />
+                  <InputNumber style={{width: 70}} />
                 </Form.Item>
                 <Form.Item
-                  label="y轴"
+                  label={<FormattedMessage id="y"></FormattedMessage>}
                   name="posy"
                   rules={[
                     {
                       required: true,
-                      message: '请输入y轴坐标',
                     },
                   ]}
                 >
-                  <Input />
+                  <InputNumber style={{width: 70}} />
                 </Form.Item>
                 <Form.Item
-                  label="z轴"
+                  label={<FormattedMessage id="z"></FormattedMessage>}
                   name="posz"
                   rules={[
                     {
                       required: true,
-                      message: '请输入z轴坐标',
                     },
                   ]}
                 >
-                  <Input />
+                  <InputNumber style={{width: 70}} />
                 </Form.Item>
-                <Form.Item
-                  wrapperCol={{
-                    offset: 4,
-                    span: 20,
-                  }}
-                >
-                  <Button
-                    size="large"
-                    type="primary"
-                    htmlType="submit"
-                    disabled={!this.state.imageIds.length}
-                    loading={this.state.calcLoading}
-                  >
-                    计算
-                  </Button>
-                  <div className="text-sm text-center text-black mt-3">
-                    {this.state.message}
-                  </div>
-                </Form.Item>
+                <div className="flex justify-center items-center w-full mt-6">
+                  <Form.Item>
+                    <Button
+                      size="large"
+                      type="primary"
+                      htmlType="submit"
+                      disabled={!this.state.imageIds.length}
+                      loading={this.state.calcLoading}
+                    >
+                      <FormattedMessage id="buttonStart"></FormattedMessage>
+                    </Button>
+                    <Button
+                      className="ml-3"
+                      size="large"
+                      type="ghost"
+                      disabled={!this.state.imageIds.length || !this.state.calcLoading}
+                      onClick={onCancel}
+                    >
+                      <FormattedMessage id="buttonStop"></FormattedMessage>
+                    </Button>
+                  </Form.Item>
+                </div>
               </Form>
+              <div className="mt-6">
+                <Steps direction="vertical" current={this.state.currStep}>
+                  <Step title={<FormattedMessage id="step1"></FormattedMessage>} description={this.state.tasks.task1} />
+                  <Step title={<FormattedMessage id="step2"></FormattedMessage>} description={this.state.tasks.task2} />
+                  <Step title={<FormattedMessage id="step3"></FormattedMessage>} description={this.state.tasks.task3} />
+                </Steps>
+              </div>
             </div>
           </div>
         </main>
+        <footer>
+          <div className="text-gray-400 text-sm text-center mt-10"><FormattedMessage id="tips"></FormattedMessage></div>
+        </footer>
       </div>
     )
   }

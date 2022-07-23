@@ -1,0 +1,18 @@
+{
+  "lang": "中文",
+  "title": "AI platform for Lung Nodule Diagnosis",
+  "uploadNormal": "Select DCM File",
+  "uploadLoading": "Files Uploading...",
+  "uploadDrag": "Drag File Here",
+  "uploadInput": "Please Select A File",
+  "step1": "Judgment of benign and malignant (if the probability is greater than C, enter the judgment of Step2)",
+  "step2": "Whether to judge before infiltration (if the probability is greater than m, enter the judgment of Step3)",
+  "step3": "The judgment of malignant degree is divided into three grades: high, high and low",
+  "buttonStart": "Start Calculation",
+  "buttonStop": "Stop Calculation",
+  "gen": "Image generation in progress...",
+  "x": "X-axis",
+  "y": "Y-axis",
+  "z": "Z-axis",
+  "tips": "The prediction results of the platform are only for reference and are not used as the final diagnosis basis. Please combine the judgment of professional doctors"
+}

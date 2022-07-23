@@ -1,0 +1,18 @@
+{
+  "lang": "English",
+  "title": "肺结节诊断的人工智能平台",
+  "uploadNormal": "请选择DCM文件",
+  "uploadLoading": "个文件上传中",
+  "uploadDrag": "拖拽文件到此处",
+  "uploadInput": "请选择文件夹",
+  "step1": "良恶性判断（如果概率大于C，则进入step2的判断）",
+  "step2": "是否浸润前判断（如果概率大于M，则进入step3的判断）",
+  "step3": "恶性程度的判断，分高中低三档",
+  "buttonStart": "开始计算",
+  "buttonStop": "停止计算",
+  "gen": "图像生成中...",
+  "x": "x轴",
+  "y": "y轴",
+  "z": "z轴",
+  "tips": "平台预测结果仅供参考，不作为最终诊断依据，请结合专业医生判断"
+}
