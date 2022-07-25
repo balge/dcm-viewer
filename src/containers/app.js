@@ -9,8 +9,17 @@ import { CloudUploadOutlined } from '@ant-design/icons'
 import Cookies from 'js-cookie'
 
 const { Step } = Steps
-const { TaskQueue } = helpers
+const { TaskQueue, RandomNum } = helpers
 let timer = null
+let stepTimer = null
+
+const ERRORS = {
+  400: <FormattedMessage id="errorFailed"></FormattedMessage>,
+  401: <FormattedMessage id="errorStop"></FormattedMessage>,
+  402: <FormattedMessage id="errorDoing"></FormattedMessage>,
+  403: <FormattedMessage id="errorNpy"></FormattedMessage>,
+  404: <FormattedMessage id="errorTimeout"></FormattedMessage>,
+}
 
 export default class App extends Component {
   // 1左键，2右键， 4中间滚轮click
@@ -28,6 +37,11 @@ export default class App extends Component {
     uploading: false,
     calcLoading: false,
     tasks: {
+      task1: '',
+      task2: '',
+      task3: '',
+    },
+    renderTasks: {
       task1: '',
       task2: '',
       task3: '',
@@ -55,57 +69,108 @@ export default class App extends Component {
   }
   render() {
     const onFinish = (values) => {
-      const params = {
-        x: values.posx,
-        y: values.posy,
-        z: values.posz,
-        path: this.state.paths.path,
-        path_name: this.state.paths.path_name,
-      }
-      api.post('/api/demo/calculate', params).then((res) => {
-        message.info(res.data.data.msg)
-      })
       this.setState({
-        tasks: {
-          task1: '',
-          task2: '',
-          task3: '',
-        },
-        stopParam: params,
         calcLoading: true,
-        currStep: 0,
       })
-      timer = setInterval(() => {
-        waitFnc(params).then((res) => {
-          if (res.data.code === 200) {
-            clearInterval(timer)
-            this.setState({
-              calcLoading: false,
-              currStep: 2,
-              tasks: {
-                task1: res.data.data.task01,
-                task2: res.data.data.task02,
-                task3: res.data.data.task03,
-              },
-            })
-          }
+      //说明有结果，计算都是下一步
+      if (this.state.currStep === 1) {
+        stepTimer = setTimeout(() => {
+          this.setState({
+            seconds: 0,
+            renderTasks: {
+              task1: this.state.tasks.task1,
+              task2: this.state.tasks.task2,
+            },
+            currStep: 2,
+            calcLoading: false,
+          })
+        }, RandomNum(3, 7))
+      } else if (this.state.currStep === 2) {
+        stepTimer = setTimeout(() => {
+          this.setState({
+            seconds: 0,
+            renderTasks: {
+              task1: this.state.tasks.task1,
+              task2: this.state.tasks.task2,
+              task3: this.state.tasks.task3,
+            },
+            currStep: 3,
+            calcLoading: false,
+          })
+        }, RandomNum(3, 7))
+      } else {
+        // 其他情况重新发起计算
+        const params = {
+          x: values.posx,
+          y: values.posy,
+          z: values.posz,
+          path: this.state.paths.path,
+          path_name: this.state.paths.path_name,
+        }
+        api
+          .post('/api/demo/calculate', params)
+          .then((res) => {
+            if (res.data.code.indexOf('20') === -1) {
+              message.error(ERRORS[res.data.code])
+            }
+          })
+          .catch((err) => {
+            message.error(ERRORS[400])
+          })
+
+        this.setState({
+          tasks: {
+            task1: '',
+            task2: '',
+            task3: '',
+          },
+          stopParam: params,
+          calcLoading: true,
+          currStep: 0,
         })
-      }, 2000)
+        timer = setInterval(() => {
+          waitFnc(params)
+            .then((res) => {
+              if (res.data.code.indexOf('20') !== -1) {
+                clearInterval(timer)
+                this.setState({
+                  calcLoading: false,
+                  currStep: 1,
+                  tasks: {
+                    task1: res.data.data.task01,
+                    task2: res.data.data.task02,
+                    task3: res.data.data.task03,
+                  },
+                  renderTasks: {
+                    task1: res.data.data.task01,
+                  },
+                })
+              } else {
+              }
+            })
+            .catch((err) => {
+              message.error(ERRORS[400])
+            })
+        }, 2000)
+      }
     }
 
     const onCancel = () => {
-      api.post('/api/demo/stop', {
-        ...this.state.stopParam
-      }).then(res => {
-        
-        
-      }).catch(() => {
-
-      })
-      this.setState({
-        calcLoading: false,
-      })
-      clearInterval(timer)
+      console.log('stop')
+      setTimeout(() => {
+        this.setState({
+          calcLoading: false,
+        })
+        console.log(this.state.calcLoading, 'stop')
+      }, 5)
+      if (this.state.currStep >= 1) {
+        clearTimeout(stepTimer)
+      } else {
+        api.post('/api/demo/stop', {
+          ...this.state.stopParam,
+        })
+        clearInterval(timer)
+      }
     }
 
     const waitFnc = (params) => {
@@ -137,15 +202,17 @@ export default class App extends Component {
                 this.setState({
                   precent: (count / len) * 100,
                 })
-                cornerstone.loadAndCacheImage(
-                  `wadouri://121.196.101.101:80${res.data.data.img[0].url}`,
-                  { addToBeginning: true, priority: -5 }
-                ).then(image => {
-                  return resolve({
-                    ...res.data.data,
-                    index: image.data.string('x00200013')
+                cornerstone
+                  .loadAndCacheImage(
+                    `wadouri://121.196.101.101:8090${res.data.data.img[0].url}`,
+                    { addToBeginning: true, priority: -5 }
+                  )
+                  .then((image) => {
+                    return resolve({
+                      ...res.data.data,
+                      index: image.data.string('x00200013'),
+                    })
                   })
-                })
               })
             )
         )
@@ -154,7 +221,7 @@ export default class App extends Component {
         r.sort((a, b) => a.index - b.index)
         const urls = []
         r.forEach((item) => {
-          urls.push(`wadouri://121.196.101.101:80${item.img[0].url}`)
+          urls.push(`wadouri://121.196.101.101:8090${item.img[0].url}`)
         })
         this.setState({
           imageIds: urls,
@@ -169,7 +236,7 @@ export default class App extends Component {
 
     const changeLang = () => {
       const lang = Cookies.get('lang')
-      if(lang === 'zh-cn') {
+      if (lang === 'zh-cn') {
         Cookies.set('lang', 'en-us')
       } else {
         Cookies.set('lang', 'zh-cn')
@@ -182,7 +249,12 @@ export default class App extends Component {
         <header className="bg-white mb-4">
           <h1 className="text-4xl font-bold leading-tight text-gray-900 text-center mb-6">
             <FormattedMessage id="title"></FormattedMessage>
-            <div className="float-right text-sm cursor-pointer text-gray-500" onClick={changeLang}><FormattedMessage id="lang"></FormattedMessage></div>
+            <div
+              className="float-right text-sm cursor-pointer text-gray-500"
+              onClick={changeLang}
+            >
+              <FormattedMessage id="lang"></FormattedMessage>
+            </div>
           </h1>
         </header>
         <main className="w-full mx-auto grid grid-cols-2 gap-10 px-4">
@@ -194,9 +266,14 @@ export default class App extends Component {
                   size="large"
                   loading={this.state.uploading}
                 >
-                  {this.state.uploading
-                    ? <span>{this.state.fileLen} <FormattedMessage id="uploadLoading"></FormattedMessage></span>
-                    : <FormattedMessage id="uploadNormal"></FormattedMessage>}
+                  {this.state.uploading ? (
+                    <span>
+                      {this.state.fileLen}{' '}
+                      <FormattedMessage id="uploadLoading"></FormattedMessage>
+                    </span>
+                  ) : (
+                    <FormattedMessage id="uploadNormal"></FormattedMessage>
+                  )}
                 </Button>
                 <input
                   className="opacity-0 absolute left-0 top-0  bottom-0 right-0 z-10"
@@ -278,26 +355,37 @@ export default class App extends Component {
                 </div>
               ) : (
                 <div className="w-full mt-4 bg-gray-400 bg-opacity-10 rounded-xl py-8 text-center relative">
-                  <div className="text-gray-500 text-5xl"><CloudUploadOutlined /></div>
-                  <div className="text-lg text-gray-500 mt-4">{this.state.uploading ? <div><FormattedMessage id="gen"></FormattedMessage></div> : <div>
-                    <p><FormattedMessage id="uploadDrag"></FormattedMessage></p>
-                    <Button
-                      type="primary"
-                      size="large"
-                    >
-                      <FormattedMessage id="uploadNormal"></FormattedMessage>
-                    </Button>
-                    <p className="text-base mt-2"><FormattedMessage id="uploadInput"></FormattedMessage></p>
-                  </div> }</div>
-                  {
-                    !this.state.uploading && <input
-                    className="opacity-0 absolute left-0 top-0  bottom-0 right-0 z-10"
-                    type="file"
-                    webkitdirectory="webkitdirectory"
-                    multiple
-                    onChange={onChange}
-                  />
-                  }
+                  <div className="text-gray-500 text-5xl">
+                    <CloudUploadOutlined />
+                  </div>
+                  <div className="text-lg text-gray-500 mt-4">
+                    {this.state.uploading ? (
+                      <div>
+                        <FormattedMessage id="gen"></FormattedMessage>
+                      </div>
+                    ) : (
+                      <div>
+                        <p>
+                          <FormattedMessage id="uploadDrag"></FormattedMessage>
+                        </p>
+                        <Button type="primary" size="large">
+                          <FormattedMessage id="uploadNormal"></FormattedMessage>
+                        </Button>
+                        <p className="text-base mt-2">
+                          <FormattedMessage id="uploadInput"></FormattedMessage>
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  {!this.state.uploading && (
+                    <input
+                      className="opacity-0 absolute left-0 top-0  bottom-0 right-0 z-10"
+                      type="file"
+                      webkitdirectory="webkitdirectory"
+                      multiple
+                      onChange={onChange}
+                    />
+                  )}
                 </div>
               )}
             </div>
@@ -319,7 +407,7 @@ export default class App extends Component {
                     },
                   ]}
                 >
-                  <InputNumber style={{width: 70}} />
+                  <InputNumber style={{ width: 70 }} />
                 </Form.Item>
                 <Form.Item
                   label={<FormattedMessage id="y"></FormattedMessage>}
@@ -330,7 +418,7 @@ export default class App extends Component {
                     },
                   ]}
                 >
-                  <InputNumber style={{width: 70}} />
+                  <InputNumber style={{ width: 70 }} />
                 </Form.Item>
                 <Form.Item
                   label={<FormattedMessage id="z"></FormattedMessage>}
@@ -341,43 +429,57 @@ export default class App extends Component {
                     },
                   ]}
                 >
-                  <InputNumber style={{width: 70}} />
+                  <InputNumber style={{ width: 70 }} />
                 </Form.Item>
                 <div className="flex justify-center items-center w-full mt-6">
                   <Form.Item>
-                    <Button
-                      size="large"
-                      type="primary"
-                      htmlType="submit"
-                      disabled={!this.state.imageIds.length}
-                      loading={this.state.calcLoading}
-                    >
-                      <FormattedMessage id="buttonStart"></FormattedMessage>
-                    </Button>
-                    <Button
-                      className="ml-3"
-                      size="large"
-                      type="ghost"
-                      disabled={!this.state.imageIds.length || !this.state.calcLoading}
-                      onClick={onCancel}
-                    >
-                      <FormattedMessage id="buttonStop"></FormattedMessage>
-                    </Button>
+                    {this.state.calcLoading ? (
+                      <Button
+                        size="large"
+                        type="primary"
+                        onClick={() => onCancel()}
+                      >
+                        <FormattedMessage id="buttonStop"></FormattedMessage>
+                      </Button>
+                    ) : (
+                      <Button
+                        size="large"
+                        type="primary"
+                        htmlType="submit"
+                        disabled={!this.state.imageIds.length}
+                      >
+                        <FormattedMessage id="buttonStart"></FormattedMessage>
+                      </Button>
+                    )}
                   </Form.Item>
                 </div>
               </Form>
               <div className="mt-6">
                 <Steps direction="vertical" current={this.state.currStep}>
-                  <Step title={<FormattedMessage id="step1"></FormattedMessage>} description={this.state.tasks.task1} />
-                  <Step title={<FormattedMessage id="step2"></FormattedMessage>} description={this.state.tasks.task2} />
-                  <Step title={<FormattedMessage id="step3"></FormattedMessage>} description={this.state.tasks.task3} />
+                  <Step
+                    disabled
+                    title={<FormattedMessage id="step1"></FormattedMessage>}
+                    description={this.state.renderTasks.task1}
+                  />
+                  <Step
+                    disabled
+                    title={<FormattedMessage id="step2"></FormattedMessage>}
+                    description={this.state.renderTasks.task2}
+                  />
+                  <Step
+                    disabled
+                    title={<FormattedMessage id="step3"></FormattedMessage>}
+                    description={this.state.renderTasks.task3}
+                  />
                 </Steps>
               </div>
             </div>
           </div>
         </main>
         <footer>
-          <div className="text-gray-400 text-sm text-center mt-10"><FormattedMessage id="tips"></FormattedMessage></div>
+          <div className="text-gray-400 text-sm text-center mt-10">
+            <FormattedMessage id="tips"></FormattedMessage>
+          </div>
         </footer>
       </div>
     )

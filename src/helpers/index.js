@@ -5,6 +5,10 @@ import formatNumberPrecision from './formatNumberPrecision'
 import isValidNumber from './isValidNumber'
 import TaskQueue from './requestLimit'
 
+const RandomNum = (max, min) => {
+  return Math.floor(Math.random() * (max - min + 1) + min) * 1000
+}
+
 const helpers = {
   formatPN,
   formatDA,
@@ -12,6 +16,7 @@ const helpers = {
   formatNumberPrecision,
   isValidNumber,
   TaskQueue,
+  RandomNum,
 }
 
 export { helpers }
