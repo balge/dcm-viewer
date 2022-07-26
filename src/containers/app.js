@@ -41,6 +41,7 @@ export default class App extends Component {
   // 1左键，2右键， 4中间滚轮click
   state = {
     currStep: null,
+    recalculate: false,
     precent: 0,
     fileLen: 0,
     paths: {
@@ -89,7 +90,8 @@ export default class App extends Component {
       if (
         this.state.currStep === 1 &&
         this.state.tasks.task1 &&
-        this.state.tasks.task2
+        this.state.tasks.task2 &&
+        !this.state.recalculate
       ) {
         this.setState({
           calcLoading: true,
@@ -109,7 +111,8 @@ export default class App extends Component {
         this.state.currStep === 2 &&
         this.state.tasks.task1 &&
         this.state.tasks.task2 &&
-        this.state.tasks.task3
+        this.state.tasks.task3 &&
+        !this.state.recalculate
       ) {
         this.setState({
           calcLoading: true,
@@ -142,6 +145,7 @@ export default class App extends Component {
               message.error(ERRORS[res.data.code])
               this.setState({
                 calcLoading: false,
+                recalculate: false,
               })
             } else {
               this.setState({
@@ -150,6 +154,12 @@ export default class App extends Component {
                   task2: '',
                   task3: '',
                 },
+                renderTasks: {
+                  task1: '',
+                  task2: '',
+                  task3: '',
+                },
+                recalculate: false,
                 stopParam: params,
                 currStep: 0,
                 calcLoading: true,
@@ -191,6 +201,14 @@ export default class App extends Component {
             message.error(ERRORS[405])
           })
       }
+    }
+
+    const onValuesChange = () => {
+      //输入框变动后，重新开始计算
+      //记录下状态，是否重新计算
+      this.setState({
+        recalculate: true,
+      })
     }
 
     const onCancel = () => {
@@ -429,7 +447,9 @@ export default class App extends Component {
                 name="pos"
                 layout="inline"
                 onFinish={onFinish}
+                onValuesChange={onValuesChange}
                 autoComplete="off"
+                className="flex justify-between items-center"
               >
                 <Form.Item
                   label={<FormattedMessage id="x"></FormattedMessage>}
@@ -440,7 +460,7 @@ export default class App extends Component {
                     },
                   ]}
                 >
-                  <InputNumber style={{ width: 70 }} min={0} />
+                  <InputNumber style={{ width: 100 }} min={0} />
                 </Form.Item>
                 <Form.Item
                   label={<FormattedMessage id="y"></FormattedMessage>}
@@ -451,7 +471,7 @@ export default class App extends Component {
                     },
                   ]}
                 >
-                  <InputNumber style={{ width: 70 }} min={0} />
+                  <InputNumber style={{ width: 100 }} min={0} />
                 </Form.Item>
                 <Form.Item
                   label={<FormattedMessage id="z"></FormattedMessage>}
@@ -463,17 +483,18 @@ export default class App extends Component {
                   ]}
                 >
                   <InputNumber
-                    style={{ width: 70 }}
+                    style={{ width: 100 }}
                     min={1}
                     max={this.state.fileLen}
                   />
                 </Form.Item>
-                <div className="flex justify-center items-center w-full mt-6">
+                <div className="w-full mt-6">
                   <Form.Item>
                     {this.state.calcLoading ? (
                       <Button
                         size="large"
                         type="primary"
+                        block
                         onClick={() => onCancel()}
                       >
                         <FormattedMessage id="buttonStop"></FormattedMessage>
@@ -482,6 +503,7 @@ export default class App extends Component {
                       <Button
                         size="large"
                         type="primary"
+                        block
                         htmlType="submit"
                         disabled={!this.state.imageIds.length}
                       >
