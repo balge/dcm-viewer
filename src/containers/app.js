@@ -5,7 +5,7 @@ import api from '../api'
 import { helpers } from '../helpers'
 import cornerstone from 'cornerstone-core'
 import { FormattedMessage } from 'react-intl'
-import { CloudUploadOutlined } from '@ant-design/icons'
+import { CloudUploadOutlined, SoundOutlined } from '@ant-design/icons'
 import Cookies from 'js-cookie'
 
 const { Step } = Steps
@@ -14,21 +14,19 @@ let timer = null
 let stepTimer = null
 
 const ERROR_EN = {
-  errorNpy: 'Npy file was not generated successfully. Please recalculate',
-  errorTimeout: 'Timeout, please recalculate',
-  errorDoing: 'Calculating',
-  errorStop: 'Calculation stop',
+  errorNpy: 'Calculation error. Please confirm files and data are correct',
+  errorTimeout: 'The calculation timed out. Please recalculate',
   errorFailed: 'Calculation failed',
+  errorOther: 'System maintenance',
 }
 const ERROR_ZH = {
-  errorNpy: 'npy文件未生成成功请重新计算',
-  errorTimeout: '超时,请重新计算',
-  errorDoing: '计算中',
-  errorStop: '计算停止',
+  errorNpy: '计算错误，请确认文件和数据是否正确',
+  errorTimeout: '计算超时,请重新计算',
   errorFailed: '计算失败',
+  errorOther: '系统维护中',
 }
 
-const locale = Cookies.get('lang') || 'zh-cn'
+const locale = Cookies.get('lang') || 'en-us'
 console.log(locale, 'locale')
 
 const ERRORS = {
@@ -37,6 +35,7 @@ const ERRORS = {
   402: locale === 'zh-ch' ? ERROR_ZH.errorDoing : ERROR_EN.errorDoing,
   403: locale === 'zh-ch' ? ERROR_ZH.errorNpy : ERROR_EN.errorNpy,
   404: locale === 'zh-ch' ? ERROR_ZH.errorTimeout : ERROR_EN.errorTimeout,
+  405: locale === 'zh-ch' ? ERROR_ZH.errorOther : ERROR_EN.errorOther,
 }
 
 export default class App extends Component {
@@ -155,7 +154,7 @@ export default class App extends Component {
               timer = setInterval(() => {
                 waitFnc(params)
                   .then((res) => {
-                    if (res.data.code.indexOf('20') !== -1) {
+                    if (res.data.code.toString().indexOf('20') !== -1) {
                       clearInterval(timer)
                       this.setState({
                         calcLoading: false,
@@ -173,7 +172,7 @@ export default class App extends Component {
                     }
                   })
                   .catch((err) => {
-                    message.error(ERRORS[400])
+                    message.error(ERRORS[405])
                   })
               }, 2000)
             }
@@ -182,7 +181,7 @@ export default class App extends Component {
             this.setState({
               calcLoading: false,
             })
-            message.error(ERRORS[400])
+            message.error(ERRORS[405])
           })
       }
     }
@@ -278,7 +277,10 @@ export default class App extends Component {
     }
 
     return (
-      <div className="mx-auto py-6" style={{ width: 1200 }}>
+      <div
+        className="mx-auto py-6 min-h-screen reletive"
+        style={{ width: 1200 }}
+      >
         <header className="bg-white mb-4">
           <h1 className="text-4xl font-bold leading-tight text-gray-900 text-center mb-6">
             <FormattedMessage id="title"></FormattedMessage>
@@ -387,7 +389,7 @@ export default class App extends Component {
                   </div>
                 </div>
               ) : (
-                <div className="w-full mt-4 bg-gray-400 bg-opacity-10 rounded-xl py-8 text-center relative">
+                <div className="w-full mt-4 bg-gray-400 bg-opacity-10 rounded-xl py-32 text-center relative">
                   <div className="text-gray-500 text-5xl">
                     <CloudUploadOutlined />
                   </div>
@@ -400,12 +402,6 @@ export default class App extends Component {
                       <div>
                         <p>
                           <FormattedMessage id="uploadDrag"></FormattedMessage>
-                        </p>
-                        <Button type="primary" size="large">
-                          <FormattedMessage id="uploadNormal"></FormattedMessage>
-                        </Button>
-                        <p className="text-base mt-2">
-                          <FormattedMessage id="uploadInput"></FormattedMessage>
                         </p>
                       </div>
                     )}
@@ -492,28 +488,91 @@ export default class App extends Component {
                   <Step
                     disabled
                     title={<FormattedMessage id="step1"></FormattedMessage>}
-                    description={this.state.renderTasks.task1}
+                    subTitle={<FormattedMessage id="stepV1"></FormattedMessage>}
+                    description={
+                      this.state.renderTasks.task1 ? (
+                        <FormattedMessage
+                          id="result1"
+                          values={{ value: this.state.renderTasks.task1 }}
+                        ></FormattedMessage>
+                      ) : (
+                        ''
+                      )
+                    }
                   />
                   <Step
                     disabled
                     title={<FormattedMessage id="step2"></FormattedMessage>}
-                    description={this.state.renderTasks.task2}
+                    subTitle={<FormattedMessage id="stepV2"></FormattedMessage>}
+                    description={
+                      this.state.renderTasks.task2 ? (
+                        <FormattedMessage
+                          id="result2"
+                          values={{ value: this.state.renderTasks.task2 * 100 }}
+                        ></FormattedMessage>
+                      ) : (
+                        ''
+                      )
+                    }
                   />
                   <Step
                     disabled
                     title={<FormattedMessage id="step3"></FormattedMessage>}
-                    description={this.state.renderTasks.task3}
+                    description={
+                      this.state.renderTasks.task3 ? (
+                        <FormattedMessage
+                          id="result3"
+                          values={{
+                            valueHigh: this.state.renderTasks.task3[0] * 100,
+                            valueMid: this.state.renderTasks.task3[1] * 100,
+                            valueLow: this.state.renderTasks.task3[2] * 100,
+                          }}
+                        ></FormattedMessage>
+                      ) : (
+                        ''
+                      )
+                    }
                   />
                 </Steps>
+              </div>
+              <div className="mt-6">
+                <div className="text-lg text-black text-opacity-80 mb-4 flex justify-start items-center">
+                  <SoundOutlined />
+                  <div className="ml-2">Note</div>
+                </div>
+                <div className="text-base text-black text-opacity-70 mb-3">
+                  <FormattedMessage id="noteT1"></FormattedMessage>
+                </div>
+                <div className="text-base text-black text-opacity-70 mb-3">
+                  <FormattedMessage id="noteT2"></FormattedMessage>
+                  <ul className="mt-2 list-disc pl-3">
+                    <li className="text-sm text-opacity-50 mb-2">
+                      <FormattedMessage id="noteT2Text1"></FormattedMessage>
+                    </li>
+                    <li className="text-sm text-opacity-50 mb-2">
+                      <FormattedMessage id="noteT2Text2"></FormattedMessage>
+                    </li>
+                    <li className="text-sm text-opacity-50 mb-2">
+                      <FormattedMessage id="noteT2Text3"></FormattedMessage>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
         </main>
-        <footer>
-          <div className="text-gray-400 text-sm text-center mt-10">
+        <div className="text-gray-400 text-sm text-center py-6 w-full absolute left-0 right-0 bottom-0">
+          <div className="mb-6">
             <FormattedMessage id="tips"></FormattedMessage>
           </div>
-        </footer>
+          <a
+            className="text-gray-400"
+            href="http://beian.miit.gov.cn/"
+            target="_blank"
+          >
+            京ICP备2022019826号
+          </a>
+        </div>
       </div>
     )
   }
