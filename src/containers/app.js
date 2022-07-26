@@ -26,8 +26,7 @@ const ERROR_ZH = {
   errorOther: '系统维护中',
 }
 
-const locale = Cookies.get('lang') || 'en-us'
-console.log(locale, 'locale')
+const locale = Cookies.get('lang') || 'zh-cn'
 
 const ERRORS = {
   400: locale === 'zh-ch' ? ERROR_ZH.errorFailed : ERROR_EN.errorFailed,
@@ -86,15 +85,15 @@ export default class App extends Component {
   }
   render() {
     const onFinish = (values) => {
-      this.setState({
-        calcLoading: true,
-      })
       //说明有结果，计算都是下一步
       if (
         this.state.currStep === 1 &&
         this.state.tasks.task1 &&
         this.state.tasks.task2
       ) {
+        this.setState({
+          calcLoading: true,
+        })
         stepTimer = setTimeout(() => {
           this.setState({
             seconds: 0,
@@ -112,6 +111,9 @@ export default class App extends Component {
         this.state.tasks.task2 &&
         this.state.tasks.task3
       ) {
+        this.setState({
+          calcLoading: true,
+        })
         stepTimer = setTimeout(() => {
           this.setState({
             seconds: 0,
@@ -150,6 +152,7 @@ export default class App extends Component {
                 },
                 stopParam: params,
                 currStep: 0,
+                calcLoading: true,
               })
               timer = setInterval(() => {
                 waitFnc(params)
@@ -160,12 +163,12 @@ export default class App extends Component {
                         calcLoading: false,
                         currStep: 1,
                         tasks: {
-                          task1: res.data.data.task_1,
-                          task2: res.data.data.task_2,
-                          task3: res.data.data.task_3,
+                          task1: res.data.data.data.task_1,
+                          task2: res.data.data.data.task_2,
+                          task3: res.data.data.data.task_3,
                         },
                         renderTasks: {
-                          task1: res.data.data.task_1,
+                          task1: res.data.data.data.task_1,
                         },
                       })
                     } else {
@@ -271,7 +274,7 @@ export default class App extends Component {
     }
 
     const changeLang = () => {
-      const lang = Cookies.get('lang')
+      const lang = Cookies.get('lang') || 'zh-cn'
       if (lang === 'zh-cn') {
         Cookies.set('lang', 'en-us')
       } else {
