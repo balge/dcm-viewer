@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 .ant-upload-list-item {
-    display: none !important;
+  display: none !important;
 }
-.ant-upload {width: 100%;}
+.ant-upload {
+  width: 100%;
+}
+.ant-form-inline .ant-form-item-with-help {
+  margin: 0 !important;
+}
+.ant-form-item-explain.ant-form-item-explain-connected {
+  display: none !important;
+}

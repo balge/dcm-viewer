@@ -147,68 +147,83 @@ export default class App extends Component {
                 calcLoading: false,
                 recalculate: false,
               })
-            } else {
-              this.setState({
-                tasks: {
-                  task1: '',
-                  task2: '',
-                  task3: '',
-                },
-                renderTasks: {
-                  task1: '',
-                  task2: '',
-                  task3: '',
-                },
-                recalculate: false,
-                stopParam: params,
-                currStep: 0,
-                calcLoading: true,
-              })
-              timer = setInterval(() => {
-                waitFnc(params)
-                  .then((res) => {
-                    if (res.data.code.toString().indexOf('20') !== -1) {
-                      clearInterval(timer)
-                      this.setState({
-                        calcLoading: false,
-                        currStep: 1,
-                        tasks: {
-                          task1: res.data.data.data.task_1,
-                          task2: res.data.data.data.task_2,
-                          task3: res.data.data.data.task_3,
-                        },
-                        renderTasks: {
-                          task1: res.data.data.data.task_1,
-                        },
-                      })
-                    } else {
-                      if (res.data.code !== 0) {
-                        message.error(ERRORS[res.data.code])
-                        onCancel()
-                      }
-                    }
-                  })
-                  .catch((err) => {
-                    message.error(ERRORS[405])
-                  })
-              }, 2000)
+              clearTimeout(stepTimer)
+              clearTimeout(timer)
             }
           })
           .catch((err) => {
             this.setState({
               calcLoading: false,
+              recalculate: false,
             })
+            clearTimeout(stepTimer)
+            clearTimeout(timer)
             message.error(ERRORS[405])
           })
+        this.setState({
+          tasks: {
+            task1: '',
+            task2: '',
+            task3: '',
+          },
+          renderTasks: {
+            task1: '',
+            task2: '',
+            task3: '',
+          },
+          recalculate: false,
+          stopParam: params,
+          currStep: 0,
+          calcLoading: true,
+        })
+        timer = setInterval(() => {
+          waitFnc(params)
+            .then((res) => {
+              if (res.data.code.toString().indexOf('20') !== -1) {
+                clearInterval(timer)
+                this.setState({
+                  calcLoading: false,
+                  currStep: 1,
+                  tasks: {
+                    task1: res.data.data.data.task_1,
+                    task2: res.data.data.data.task_2,
+                    task3: res.data.data.data.task_3,
+                  },
+                  renderTasks: {
+                    task1: res.data.data.data.task_1,
+                  },
+                })
+              } else {
+                if (res.data.code !== 0) {
+                  message.error(ERRORS[res.data.code])
+                  onCancel()
+                }
+              }
+            })
+            .catch((err) => {
+              message.error(ERRORS[405])
+            })
+        }, 2000)
       }
     }
 
-    const onValuesChange = () => {
-      //输入框变动后，重新开始计算
-      //记录下状态，是否重新计算
-      this.setState({
-        recalculate: true,
-      })
+    //输入框变动后，重新开始计算
+    //记录下状态，是否重新计算
+    const onValuesChange = (changedValues, allValues) => {
+      console.log(allValues)
+      if (
+        this.state.stopParam.x === allValues.posx &&
+        this.state.stopParam.y === allValues.posy &&
+        this.state.stopParam.z === allValues.posz
+      ) {
+        this.setState({
+          recalculate: false,
+        })
+      } else {
+        this.setState({
+          recalculate: true,
+        })
+      }
     }
 
     const onCancel = () => {
@@ -449,7 +464,7 @@ export default class App extends Component {
                 onFinish={onFinish}
                 onValuesChange={onValuesChange}
                 autoComplete="off"
-                className="flex justify-between items-center"
+                className="flex justify-between items-start"
               >
                 <Form.Item
                   label={<FormattedMessage id="x"></FormattedMessage>}
@@ -457,10 +472,11 @@ export default class App extends Component {
                   rules={[
                     {
                       required: true,
+                      message: '',
                     },
                   ]}
                 >
-                  <InputNumber style={{ width: 100 }} min={0} />
+                  <InputNumber style={{ width: 90 }} min={0} max={510} />
                 </Form.Item>
                 <Form.Item
                   label={<FormattedMessage id="y"></FormattedMessage>}
@@ -468,10 +484,11 @@ export default class App extends Component {
                   rules={[
                     {
                       required: true,
+                      message: '',
                     },
                   ]}
                 >
-                  <InputNumber style={{ width: 100 }} min={0} />
+                  <InputNumber style={{ width: 90 }} min={0} max={510} />
                 </Form.Item>
                 <Form.Item
                   label={<FormattedMessage id="z"></FormattedMessage>}
@@ -479,11 +496,12 @@ export default class App extends Component {
                   rules={[
                     {
                       required: true,
+                      message: '',
                     },
                   ]}
                 >
                   <InputNumber
-                    style={{ width: 100 }}
+                    style={{ width: 90 }}
                     min={1}
                     max={this.state.fileLen}
                   />
