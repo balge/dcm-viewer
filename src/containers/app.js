@@ -160,12 +160,12 @@ export default class App extends Component {
                         calcLoading: false,
                         currStep: 1,
                         tasks: {
-                          task1: res.data.data.task01,
-                          task2: res.data.data.task02,
-                          task3: res.data.data.task03,
+                          task1: res.data.data.task_1,
+                          task2: res.data.data.task_2,
+                          task3: res.data.data.task_3,
                         },
                         renderTasks: {
-                          task1: res.data.data.task01,
+                          task1: res.data.data.task_1,
                         },
                       })
                     } else {
@@ -281,10 +281,7 @@ export default class App extends Component {
     }
 
     return (
-      <div
-        className="mx-auto py-6 min-h-screen reletive"
-        style={{ width: 1200 }}
-      >
+      <div className="mx-auto py-6 reletive" style={{ width: 1200 }}>
         <header className="bg-white mb-4">
           <h1 className="text-4xl font-bold leading-tight text-gray-900 text-center mb-6">
             <FormattedMessage id="title"></FormattedMessage>
@@ -393,7 +390,7 @@ export default class App extends Component {
                   </div>
                 </div>
               ) : (
-                <div className="w-full mt-4 bg-gray-400 bg-opacity-10 rounded-xl py-32 text-center relative">
+                <div className="w-full mt-4 bg-gray-400 bg-opacity-10 rounded-xl py-52 text-center relative">
                   <div className="text-gray-500 text-5xl">
                     <CloudUploadOutlined />
                   </div>
@@ -440,7 +437,7 @@ export default class App extends Component {
                     },
                   ]}
                 >
-                  <InputNumber style={{ width: 70 }} />
+                  <InputNumber style={{ width: 70 }} min={0} />
                 </Form.Item>
                 <Form.Item
                   label={<FormattedMessage id="y"></FormattedMessage>}
@@ -451,7 +448,7 @@ export default class App extends Component {
                     },
                   ]}
                 >
-                  <InputNumber style={{ width: 70 }} />
+                  <InputNumber style={{ width: 70 }} min={0} />
                 </Form.Item>
                 <Form.Item
                   label={<FormattedMessage id="z"></FormattedMessage>}
@@ -462,7 +459,11 @@ export default class App extends Component {
                     },
                   ]}
                 >
-                  <InputNumber style={{ width: 70 }} />
+                  <InputNumber
+                    style={{ width: 70 }}
+                    min={1}
+                    max={this.state.fileLen}
+                  />
                 </Form.Item>
                 <div className="flex justify-center items-center w-full mt-6">
                   <Form.Item>
@@ -497,7 +498,7 @@ export default class App extends Component {
                       this.state.renderTasks.task1 ? (
                         <FormattedMessage
                           id="result1"
-                          values={{ value: this.state.renderTasks.task1 }}
+                          values={{ value: this.state.renderTasks.task1 * 100 }}
                         ></FormattedMessage>
                       ) : (
                         ''
@@ -565,7 +566,7 @@ export default class App extends Component {
             </div>
           </div>
         </main>
-        <div className="text-gray-400 text-sm text-center py-6 w-full absolute left-0 right-0 bottom-0">
+        <div className="text-gray-400 text-sm text-center py-6 mt-4">
           <div className="mb-6">
             <FormattedMessage id="tips"></FormattedMessage>
           </div>
@@ -574,7 +575,7 @@ export default class App extends Component {
             href="http://beian.miit.gov.cn/"
             target="_blank"
           >
-            京ICP备2022019826号
+            京ICP备2022019826号-1
           </a>
         </div>
       </div>
