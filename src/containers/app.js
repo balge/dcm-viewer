@@ -169,6 +169,10 @@ export default class App extends Component {
                         },
                       })
                     } else {
+                      if (res.data.code !== 0) {
+                        message.error(ERRORS[res.data.code])
+                        onCancel()
+                      }
                     }
                   })
                   .catch((err) => {
