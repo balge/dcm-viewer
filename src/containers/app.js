@@ -501,39 +501,10 @@ export default class App extends Component {
                       this.state.renderTasks.task1 ? (
                         <FormattedMessage
                           id="result1"
-                          values={{ value: this.state.renderTasks.task1 * 100 }}
-                        ></FormattedMessage>
-                      ) : (
-                        ''
-                      )
-                    }
-                  />
-                  <Step
-                    disabled
-                    title={<FormattedMessage id="step2"></FormattedMessage>}
-                    subTitle={<FormattedMessage id="stepV2"></FormattedMessage>}
-                    description={
-                      this.state.renderTasks.task2 ? (
-                        <FormattedMessage
-                          id="result2"
-                          values={{ value: this.state.renderTasks.task2 * 100 }}
-                        ></FormattedMessage>
-                      ) : (
-                        ''
-                      )
-                    }
-                  />
-                  <Step
-                    disabled
-                    title={<FormattedMessage id="step3"></FormattedMessage>}
-                    description={
-                      this.state.renderTasks.task3 ? (
-                        <FormattedMessage
-                          id="result3"
                           values={{
-                            valueHigh: this.state.renderTasks.task3[0] * 100,
-                            valueMid: this.state.renderTasks.task3[1] * 100,
-                            valueLow: this.state.renderTasks.task3[2] * 100,
+                            value: (this.state.renderTasks.task1 * 100).toFixed(
+                              2
+                            ),
                           }}
                         ></FormattedMessage>
                       ) : (
@@ -541,6 +512,104 @@ export default class App extends Component {
                       )
                     }
                   />
+                  {this.state.tasks.task2 ? (
+                    <Step
+                      disabled
+                      title={<FormattedMessage id="step2"></FormattedMessage>}
+                      subTitle={
+                        <FormattedMessage id="stepV2"></FormattedMessage>
+                      }
+                      description={
+                        this.state.renderTasks.task2 ? (
+                          <FormattedMessage
+                            id="result2"
+                            values={{
+                              value: (
+                                this.state.renderTasks.task2 * 100
+                              ).toFixed(2),
+                            }}
+                          ></FormattedMessage>
+                        ) : (
+                          ''
+                        )
+                      }
+                    />
+                  ) : (
+                    <Step
+                      status="wait"
+                      disabled
+                      title={<FormattedMessage id="step2"></FormattedMessage>}
+                      subTitle={
+                        <FormattedMessage id="stepV2"></FormattedMessage>
+                      }
+                      description={
+                        this.state.renderTasks.task2 ? (
+                          <FormattedMessage
+                            id="result2"
+                            values={{
+                              value: (
+                                this.state.renderTasks.task2 * 100
+                              ).toFixed(2),
+                            }}
+                          ></FormattedMessage>
+                        ) : (
+                          ''
+                        )
+                      }
+                    />
+                  )}
+                  {this.state.tasks.task3 ? (
+                    <Step
+                      disabled
+                      title={<FormattedMessage id="step3"></FormattedMessage>}
+                      description={
+                        this.state.renderTasks.task3 ? (
+                          <FormattedMessage
+                            id="result3"
+                            values={{
+                              valueHigh: (
+                                this.state.renderTasks.task3[0] * 100
+                              ).toFixed(2),
+                              valueMid: (
+                                this.state.renderTasks.task3[1] * 100
+                              ).toFixed(2),
+                              valueLow: (
+                                this.state.renderTasks.task3[2] * 100
+                              ).toFixed(2),
+                            }}
+                          ></FormattedMessage>
+                        ) : (
+                          ''
+                        )
+                      }
+                    />
+                  ) : (
+                    <Step
+                      status="wait"
+                      disabled
+                      title={<FormattedMessage id="step3"></FormattedMessage>}
+                      description={
+                        this.state.renderTasks.task3 ? (
+                          <FormattedMessage
+                            id="result3"
+                            values={{
+                              valueHigh: (
+                                this.state.renderTasks.task3[0] * 100
+                              ).toFixed(2),
+                              valueMid: (
+                                this.state.renderTasks.task3[1] * 100
+                              ).toFixed(2),
+                              valueLow: (
+                                this.state.renderTasks.task3[2] * 100
+                              ).toFixed(2),
+                            }}
+                          ></FormattedMessage>
+                        ) : (
+                          ''
+                        )
+                      }
+                    />
+                  )}
                 </Steps>
               </div>
               <div className="mt-6">
