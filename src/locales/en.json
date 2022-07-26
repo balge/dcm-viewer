@@ -14,10 +14,5 @@
   "x": "X-axis",
   "y": "Y-axis",
   "z": "Z-axis",
-  "tips": "The prediction results of the platform are only for reference and are not used as the final diagnosis basis. Please combine the judgment of professional doctors",
-  "errorNpy": "Npy file was not generated successfully. Please recalculate",
-  "errorTimeout": "Timeout, please recalculate",
-  "errorDoing": "Calculating",
-  "errorStop": "Calculation stop",
-  "errorFailed": "Calculation failed"
+  "tips": "The prediction results of the platform are only for reference and are not used as the final diagnosis basis. Please combine the judgment of professional doctors"
 }

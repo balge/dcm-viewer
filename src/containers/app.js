@@ -13,12 +13,30 @@ const { TaskQueue, RandomNum } = helpers
 let timer = null
 let stepTimer = null
 
+const ERROR_EN = {
+  errorNpy: 'Npy file was not generated successfully. Please recalculate',
+  errorTimeout: 'Timeout, please recalculate',
+  errorDoing: 'Calculating',
+  errorStop: 'Calculation stop',
+  errorFailed: 'Calculation failed',
+}
+const ERROR_ZH = {
+  errorNpy: 'npy文件未生成成功请重新计算',
+  errorTimeout: '超时,请重新计算',
+  errorDoing: '计算中',
+  errorStop: '计算停止',
+  errorFailed: '计算失败',
+}
+
+const locale = Cookies.get('lang') || 'zh-cn'
+console.log(locale, 'locale')
+
 const ERRORS = {
-  400: <FormattedMessage id="errorFailed"></FormattedMessage>,
-  401: <FormattedMessage id="errorStop"></FormattedMessage>,
-  402: <FormattedMessage id="errorDoing"></FormattedMessage>,
-  403: <FormattedMessage id="errorNpy"></FormattedMessage>,
-  404: <FormattedMessage id="errorTimeout"></FormattedMessage>,
+  400: locale === 'zh-ch' ? ERROR_ZH.errorFailed : ERROR_EN.errorFailed,
+  401: locale === 'zh-ch' ? ERROR_ZH.errorStop : ERROR_EN.errorStop,
+  402: locale === 'zh-ch' ? ERROR_ZH.errorDoing : ERROR_EN.errorDoing,
+  403: locale === 'zh-ch' ? ERROR_ZH.errorNpy : ERROR_EN.errorNpy,
+  404: locale === 'zh-ch' ? ERROR_ZH.errorTimeout : ERROR_EN.errorTimeout,
 }
 
 export default class App extends Component {
@@ -73,7 +91,11 @@ export default class App extends Component {
         calcLoading: true,
       })
       //说明有结果，计算都是下一步
-      if (this.state.currStep === 1) {
+      if (
+        this.state.currStep === 1 &&
+        this.state.tasks.task1 &&
+        this.state.tasks.task2
+      ) {
         stepTimer = setTimeout(() => {
           this.setState({
             seconds: 0,
@@ -85,7 +107,12 @@ export default class App extends Component {
             calcLoading: false,
           })
         }, RandomNum(3, 7))
-      } else if (this.state.currStep === 2) {
+      } else if (
+        this.state.currStep === 2 &&
+        this.state.tasks.task1 &&
+        this.state.tasks.task2 &&
+        this.state.tasks.task3
+      ) {
         stepTimer = setTimeout(() => {
           this.setState({
             seconds: 0,
@@ -110,58 +137,61 @@ export default class App extends Component {
         api
           .post('/api/demo/calculate', params)
           .then((res) => {
-            if (res.data.code.indexOf('20') === -1) {
+            if (res.data.code.toString().indexOf('20') === -1) {
               message.error(ERRORS[res.data.code])
+              this.setState({
+                calcLoading: false,
+              })
+            } else {
+              this.setState({
+                tasks: {
+                  task1: '',
+                  task2: '',
+                  task3: '',
+                },
+                stopParam: params,
+                currStep: 0,
+              })
+              timer = setInterval(() => {
+                waitFnc(params)
+                  .then((res) => {
+                    if (res.data.code.indexOf('20') !== -1) {
+                      clearInterval(timer)
+                      this.setState({
+                        calcLoading: false,
+                        currStep: 1,
+                        tasks: {
+                          task1: res.data.data.task01,
+                          task2: res.data.data.task02,
+                          task3: res.data.data.task03,
+                        },
+                        renderTasks: {
+                          task1: res.data.data.task01,
+                        },
+                      })
+                    } else {
+                    }
+                  })
+                  .catch((err) => {
+                    message.error(ERRORS[400])
+                  })
+              }, 2000)
             }
           })
           .catch((err) => {
+            this.setState({
+              calcLoading: false,
+            })
             message.error(ERRORS[400])
           })
-
-        this.setState({
-          tasks: {
-            task1: '',
-            task2: '',
-            task3: '',
-          },
-          stopParam: params,
-          calcLoading: true,
-          currStep: 0,
-        })
-        timer = setInterval(() => {
-          waitFnc(params)
-            .then((res) => {
-              if (res.data.code.indexOf('20') !== -1) {
-                clearInterval(timer)
-                this.setState({
-                  calcLoading: false,
-                  currStep: 1,
-                  tasks: {
-                    task1: res.data.data.task01,
-                    task2: res.data.data.task02,
-                    task3: res.data.data.task03,
-                  },
-                  renderTasks: {
-                    task1: res.data.data.task01,
-                  },
-                })
-              } else {
-              }
-            })
-            .catch((err) => {
-              message.error(ERRORS[400])
-            })
-        }, 2000)
       }
     }
 
     const onCancel = () => {
-      console.log('stop')
       setTimeout(() => {
         this.setState({
           calcLoading: false,
         })
-        console.log(this.state.calcLoading, 'stop')
       }, 5)
       if (this.state.currStep >= 1) {
         clearTimeout(stepTimer)
@@ -179,8 +209,11 @@ export default class App extends Component {
 
     const onChange = (e) => {
       console.log(e.target.files, 'files')
+      const files = Object.values(e.target.files).filter(
+        (it) => it.name.indexOf('.dcm') !== -1 || it.name.indexOf('.DCM') !== -1
+      )
       const timestamp = Math.floor(new Date().getTime() / 1000).toString()
-      const len = e.target.files.length
+      const len = files.length
       this.setState({
         uploading: true,
         imageIdIndex: 0,
@@ -191,7 +224,7 @@ export default class App extends Component {
       let count = 0
       for (let i = 0; i < len; i++) {
         let formData = new FormData()
-        formData.append('files[]', e.target.files[i])
+        formData.append('files[]', files[i])
         formData.append('path', timestamp)
         formData.append('index', i)
         tasks.push(
