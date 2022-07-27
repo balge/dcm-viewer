@@ -210,7 +210,6 @@ export default class App extends Component {
     //输入框变动后，重新开始计算
     //记录下状态，是否重新计算
     const onValuesChange = (changedValues, allValues) => {
-      console.log(allValues)
       if (
         this.state.stopParam.x === allValues.posx &&
         this.state.stopParam.y === allValues.posy &&
@@ -276,7 +275,7 @@ export default class App extends Component {
                 })
                 cornerstone
                   .loadAndCacheImage(
-                    `wadouri://121.196.101.101:8090${res.data.data.img[0].url}`,
+                    `wadouri:https://seeyourlung.com.cn${res.data.data.img[0].url}`,
                     { addToBeginning: true, priority: -5 }
                   )
                   .then((image) => {
@@ -293,7 +292,7 @@ export default class App extends Component {
         r.sort((a, b) => a.index - b.index)
         const urls = []
         r.forEach((item) => {
-          urls.push(`wadouri://121.196.101.101:8090${item.img[0].url}`)
+          urls.push(`wadouri:https://seeyourlung.com.cn${item.img[0].url}`)
         })
         this.setState({
           imageIds: urls,
@@ -414,6 +413,7 @@ export default class App extends Component {
                   />
                   <div className="mt-4">
                     <Slider
+                      tooltipVisible={false}
                       min={0}
                       max={this.state.imageIds.length - 1}
                       value={this.state.imageIdIndex}

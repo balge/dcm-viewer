@@ -19,7 +19,7 @@ const api = {
   get(url, data, other = { headers: {} }) {
     return instance({
       method: 'get',
-      baseURL: 'http://121.196.101.101:8090',
+      baseURL: 'https://seeyourlung.com.cn',
       url: url,
       headers: {
         ...other.headers,
@@ -30,7 +30,7 @@ const api = {
   post(url, data, other = { headers: {} }) {
     return instance({
       method: 'post',
-      baseURL: 'http://121.196.101.101:8090',
+      baseURL: 'https://seeyourlung.com.cn',
       url: url,
       headers: {
         ...other.headers,
