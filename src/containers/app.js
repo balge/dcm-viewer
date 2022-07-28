@@ -248,7 +248,7 @@ export default class App extends Component {
     const onChange = (e) => {
       console.log(e.target.files, 'files')
       const files = Object.values(e.target.files).filter(
-        (it) => it.name.indexOf('.dcm') !== -1 || it.name.indexOf('.DCM') !== -1
+        (it) => !it.name.startsWith('.')
       )
       const timestamp = Math.floor(new Date().getTime() / 1000).toString()
       const len = files.length
