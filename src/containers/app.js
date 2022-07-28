@@ -18,12 +18,14 @@ const ERROR_EN = {
   errorTimeout: 'The calculation timed out. Please recalculate',
   errorFailed: 'Calculation failed',
   errorOther: 'System maintenance',
+  errorFile: 'The file is expired. Please upload it again.',
 }
 const ERROR_ZH = {
   errorNpy: '计算错误，请确认文件和数据是否正确',
   errorTimeout: '计算超时,请重新计算',
   errorFailed: '计算失败',
   errorOther: '系统维护中',
+  errorFile: '文件过期，请重新上传',
 }
 
 const locale = Cookies.get('lang') || 'zh-cn'
@@ -34,7 +36,8 @@ const ERRORS = {
   402: locale === 'zh-ch' ? ERROR_ZH.errorDoing : ERROR_EN.errorDoing,
   403: locale === 'zh-ch' ? ERROR_ZH.errorNpy : ERROR_EN.errorNpy,
   404: locale === 'zh-ch' ? ERROR_ZH.errorTimeout : ERROR_EN.errorTimeout,
-  405: locale === 'zh-ch' ? ERROR_ZH.errorOther : ERROR_EN.errorOther,
+  405: locale === 'zh-ch' ? ERROR_ZH.errorFile : ERROR_EN.errorFile,
+  406: locale === 'zh-ch' ? ERROR_ZH.errorOther : ERROR_EN.errorOther,
 }
 
 export default class App extends Component {
@@ -158,7 +161,7 @@ export default class App extends Component {
             })
             clearTimeout(stepTimer)
             clearTimeout(timer)
-            message.error(ERRORS[405])
+            message.error(ERRORS[406])
           })
         this.setState({
           tasks: {
@@ -201,7 +204,7 @@ export default class App extends Component {
               }
             })
             .catch((err) => {
-              message.error(ERRORS[405])
+              message.error(ERRORS[406])
             })
         }, 2000)
       }
