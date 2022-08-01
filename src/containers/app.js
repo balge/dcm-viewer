@@ -308,27 +308,11 @@ export default class App extends Component {
       })
     }
 
-    const changeLang = () => {
-      const lang = Cookies.get('lang') || 'zh-cn'
-      if (lang === 'zh-cn') {
-        Cookies.set('lang', 'en-us')
-      } else {
-        Cookies.set('lang', 'zh-cn')
-      }
-      location.reload()
-    }
-
     return (
       <div className="mx-auto py-6 reletive" style={{ width: 1200 }}>
         <header className="bg-white mb-4">
           <h1 className="text-4xl font-bold leading-tight text-gray-900 text-center mb-6">
             <FormattedMessage id="title"></FormattedMessage>
-            <div
-              className="float-right text-sm cursor-pointer text-gray-500"
-              onClick={changeLang}
-            >
-              <FormattedMessage id="lang"></FormattedMessage>
-            </div>
           </h1>
         </header>
         <main className="w-full mx-auto grid grid-cols-2 gap-10 px-4">
