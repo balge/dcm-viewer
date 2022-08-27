@@ -44,7 +44,7 @@ export default class Root extends React.Component {
       >
         <div className="relative">
           <div
-            className="text-sm cursor-pointer absolute left-1/2 top-10 flex"
+            className="text-sm cursor-pointer absolute left-1/2 top-10 flex whitespace-nowrap"
             style={{ marginLeft: 520 }}
             onClick={() => changeLang(this.state.lang)}
           >

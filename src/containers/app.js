@@ -319,39 +319,45 @@ export default class App extends Component {
         <main className="w-full mx-auto grid grid-cols-2 gap-10 px-4">
           <div>
             <div className="p-6">
-              <div className="w-full flex justify-start items-center">
-                <div className="relative">
-                  <Button
-                    type="primary"
-                    size="large"
-                    loading={this.state.uploading}
-                  >
-                    {this.state.uploading ? (
-                      <span>
-                        {this.state.fileLen}{' '}
-                        <FormattedMessage id="uploadLoading"></FormattedMessage>
-                      </span>
-                    ) : (
-                      <FormattedMessage id="uploadNormal"></FormattedMessage>
-                    )}
-                  </Button>
-                  <input
-                    className="opacity-0 absolute left-0 top-0  bottom-0 right-0 z-10"
-                    type="file"
-                    webkitdirectory="webkitdirectory"
-                    multiple
-                    onChange={onChange}
-                    onClick={(e) => {
-                      e.target.value = ""
-                    }}
-                  />
+              <div className="w-full flex justify-between items-center">
+                <div className="flex justify-start items-center">
+                  <div className="relative">
+                    <Button
+                      type="primary"
+                      size="large"
+                      loading={this.state.uploading}
+                    >
+                      {this.state.uploading ? (
+                        <span>
+                          {this.state.fileLen}{' '}
+                          <FormattedMessage id="uploadLoading"></FormattedMessage>
+                        </span>
+                      ) : (
+                        <FormattedMessage id="uploadNormal"></FormattedMessage>
+                      )}
+                    </Button>
+                    <input
+                      className="opacity-0 absolute left-0 top-0  bottom-0 right-0 z-10"
+                      type="file"
+                      webkitdirectory="webkitdirectory"
+                      multiple
+                      onChange={onChange}
+                      onClick={(e) => {
+                        e.target.value = ""
+                      }}
+                    />
+                  </div>
+                  <div className='w-5 ml-4 text-lg cursor-pointer' onClick={() => this.setState({
+                    showDialog: true
+                  })}>
+                    <QuestionCircleOutlined />
+                  </div>
                 </div>
-                <div className='w-5 ml-4 text-lg cursor-pointer' onClick={() => this.setState({
-                  showDialog: true
-                })}>
-                  <QuestionCircleOutlined />
-                </div>
-              </div>
+                <div>
+                  <Button size="large"><a target="_blank" href={locale === 'en-us' ? 'https://seeyourlung.com.cn/upload/manual/English_manual.pdf' : 'https://seeyourlung.com.cn/upload/manual/Chinese_manual.pdf'}>
+                    <FormattedMessage id="help"></FormattedMessage>
+                  </a></Button>
+                </div></div>
               {this.state.precent && this.state.uploading ? (
                 <div className="w-full block mt-3 relative h-1 bg-gray-300">
                   <div
@@ -673,11 +679,6 @@ export default class App extends Component {
                       <FormattedMessage id="noteT2Text3"></FormattedMessage>
                     </li>
                   </ul>
-                </div>
-                <div>
-                  <Button><a target="_blank" href={locale === 'en-us' ? 'https://seeyourlung.com.cn/upload/manual/English_manual.pdf' : 'https://seeyourlung.com.cn/upload/manual/Chinese_manual.pdf'}>
-                    <FormattedMessage id="help"></FormattedMessage>
-                  </a></Button>
                 </div>
               </div>
             </div>
