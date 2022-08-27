@@ -29,10 +29,12 @@ export default class Root extends React.Component {
         this.setState({
           lang: 'en-us',
         })
+        Cookies.set('lang', 'en-us')
       } else {
         this.setState({
           lang: 'zh-cn',
         })
+        Cookies.set('lang', 'zh-cn')
       }
     }
     return (
@@ -63,7 +65,7 @@ export default class Root extends React.Component {
               English
             </span>
           </div>
-          <App />
+          <App locale={this.state.lang} />
         </div>
       </IntlProvider>
     )

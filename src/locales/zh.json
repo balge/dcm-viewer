@@ -8,7 +8,7 @@
   "step1": "良性 VS 恶性",
   "stepV1": "* 阈值 0.747",
   "step2": "浸润前病变 VS 浸润性病变",
-  "stepV2": "* 阈值 0.55",
+  "stepV2": "* 阈值 0.562",
   "step3": "病理亚型分化程度预测",
   "task1": "预测1",
   "task2": "预测2",
@@ -16,7 +16,9 @@
   "result1": "恶性率：{value}%",
   "result2": "浸润性病变的概率：{value}%",
   "result3": "高分化：{valueHigh}%, 中分化：{valueMid}%, 低分化：{valueLow}%",
-  "buttonStart": "开始计算",
+  "buttonStart1": "开始计算Step1",
+  "buttonStart2": "开始计算Step2",
+  "buttonStart3": "开始计算Step3",
   "buttonStop": "停止计算",
   "gen": "图像生成中...",
   "noteT1": "浸润前病变包括： 原位腺癌 (AIS) 和微小浸润性腺癌 (MIA)",
@@ -27,5 +29,7 @@
   "x": "X轴",
   "y": "Y轴",
   "z": "Z轴",
-  "tips": "平台预测结果仅供参考，不作为最终诊断依据，请结合专业医生判断"
+  "tips": "平台预测结果仅供参考，不作为最终诊断依据，请结合专业医生判断",
+  "help": "下载手册",
+  "dialog": "我知道了"
 }

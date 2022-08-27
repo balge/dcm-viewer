@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
 import CornerstoneViewport from '~/components/index'
-import { Slider, message, Form, InputNumber, Button, Steps } from 'antd'
+import { Slider, message, Form, InputNumber, Button, Steps, Modal } from 'antd'
 import api from '../api'
 import { helpers } from '../helpers'
 import cornerstone from 'cornerstone-core'
 import { FormattedMessage } from 'react-intl'
-import { CloudUploadOutlined, SoundOutlined } from '@ant-design/icons'
-import Cookies from 'js-cookie'
+import { CloudUploadOutlined, SoundOutlined, QuestionCircleOutlined } from '@ant-design/icons'
+
 
 const { Step } = Steps
 const { TaskQueue, RandomNum } = helpers
@@ -28,21 +28,10 @@ const ERROR_ZH = {
   errorFile: '文件过期，请重新上传',
 }
 
-const locale = Cookies.get('lang') || 'zh-cn'
-
-const ERRORS = {
-  400: locale === 'zh-ch' ? ERROR_ZH.errorFailed : ERROR_EN.errorFailed,
-  401: locale === 'zh-ch' ? ERROR_ZH.errorStop : ERROR_EN.errorStop,
-  402: locale === 'zh-ch' ? ERROR_ZH.errorDoing : ERROR_EN.errorDoing,
-  403: locale === 'zh-ch' ? ERROR_ZH.errorNpy : ERROR_EN.errorNpy,
-  404: locale === 'zh-ch' ? ERROR_ZH.errorTimeout : ERROR_EN.errorTimeout,
-  405: locale === 'zh-ch' ? ERROR_ZH.errorFile : ERROR_EN.errorFile,
-  406: locale === 'zh-ch' ? ERROR_ZH.errorOther : ERROR_EN.errorOther,
-}
-
 export default class App extends Component {
   // 1左键，2右键， 4中间滚轮click
   state = {
+    showDialog: false,
     currStep: null,
     recalculate: false,
     precent: 0,
@@ -88,6 +77,17 @@ export default class App extends Component {
     ],
   }
   render() {
+    const { locale } = this.props
+    const ERRORS = {
+      400: locale === 'zh-ch' ? ERROR_ZH.errorFailed : ERROR_EN.errorFailed,
+      401: locale === 'zh-ch' ? ERROR_ZH.errorStop : ERROR_EN.errorStop,
+      402: locale === 'zh-ch' ? ERROR_ZH.errorDoing : ERROR_EN.errorDoing,
+      403: locale === 'zh-ch' ? ERROR_ZH.errorNpy : ERROR_EN.errorNpy,
+      404: locale === 'zh-ch' ? ERROR_ZH.errorTimeout : ERROR_EN.errorTimeout,
+      405: locale === 'zh-ch' ? ERROR_ZH.errorFile : ERROR_EN.errorFile,
+      406: locale === 'zh-ch' ? ERROR_ZH.errorOther : ERROR_EN.errorOther,
+    }
+
     const onFinish = (values) => {
       //说明有结果，计算都是下一步
       if (
@@ -255,6 +255,7 @@ export default class App extends Component {
       )
       const timestamp = Math.floor(new Date().getTime() / 1000).toString()
       const len = files.length
+      if (!len) return
       this.setState({
         uploading: true,
         imageIdIndex: 0,
@@ -318,28 +319,38 @@ export default class App extends Component {
         <main className="w-full mx-auto grid grid-cols-2 gap-10 px-4">
           <div>
             <div className="p-6">
-              <div className="relative w-full">
-                <Button
-                  type="primary"
-                  size="large"
-                  loading={this.state.uploading}
-                >
-                  {this.state.uploading ? (
-                    <span>
-                      {this.state.fileLen}{' '}
-                      <FormattedMessage id="uploadLoading"></FormattedMessage>
-                    </span>
-                  ) : (
-                    <FormattedMessage id="uploadNormal"></FormattedMessage>
-                  )}
-                </Button>
-                <input
-                  className="opacity-0 absolute left-0 top-0  bottom-0 right-0 z-10"
-                  type="file"
-                  webkitdirectory="webkitdirectory"
-                  multiple
-                  onChange={onChange}
-                />
+              <div className="w-full flex justify-start items-center">
+                <div className="relative">
+                  <Button
+                    type="primary"
+                    size="large"
+                    loading={this.state.uploading}
+                  >
+                    {this.state.uploading ? (
+                      <span>
+                        {this.state.fileLen}{' '}
+                        <FormattedMessage id="uploadLoading"></FormattedMessage>
+                      </span>
+                    ) : (
+                      <FormattedMessage id="uploadNormal"></FormattedMessage>
+                    )}
+                  </Button>
+                  <input
+                    className="opacity-0 absolute left-0 top-0  bottom-0 right-0 z-10"
+                    type="file"
+                    webkitdirectory="webkitdirectory"
+                    multiple
+                    onChange={onChange}
+                    onClick={(e) => {
+                      e.target.value = ""
+                    }}
+                  />
+                </div>
+                <div className='w-5 ml-4 text-lg cursor-pointer' onClick={() => this.setState({
+                  showDialog: true
+                })}>
+                  <QuestionCircleOutlined />
+                </div>
               </div>
               {this.state.precent && this.state.uploading ? (
                 <div className="w-full block mt-3 relative h-1 bg-gray-300">
@@ -512,7 +523,9 @@ export default class App extends Component {
                         htmlType="submit"
                         disabled={!this.state.imageIds.length}
                       >
-                        <FormattedMessage id="buttonStart"></FormattedMessage>
+                        {
+                          this.state.currStep === 1 ? <FormattedMessage id="buttonStart2"></FormattedMessage> : this.state.currStep === 2 ? <FormattedMessage id="buttonStart3"></FormattedMessage> : <FormattedMessage id="buttonStart1"></FormattedMessage>
+                        }
                       </Button>
                     )}
                   </Form.Item>
@@ -661,10 +674,40 @@ export default class App extends Component {
                     </li>
                   </ul>
                 </div>
+                <div>
+                  <Button><a target="_blank" href={locale === 'en-us' ? 'https://seeyourlung.com.cn/upload/manual/English_manual.pdf' : 'https://seeyourlung.com.cn/upload/manual/Chinese_manual.pdf'}>
+                    <FormattedMessage id="help"></FormattedMessage>
+                  </a></Button>
+                </div>
               </div>
             </div>
           </div>
         </main>
+        <Modal width={620} title={locale === 'en-us' ? 'Privacy Statement' : '隐私声明'} visible={this.state.showDialog} onOk={() => this.setState({
+          showDialog: false
+        })} onCancel={() => this.setState({
+          showDialog: false
+        })} footer={[
+          <Button onClick={() => this.setState({
+            showDialog: false
+          })}>
+            <FormattedMessage id="dialog"></FormattedMessage>
+          </Button>
+        ]}>
+          {
+            locale === 'en-us' ? <div>
+              <div>说明英文1</div>
+              <div>说明英文2</div>
+              <div>说明英文3</div>
+              <div>说明英文4</div>
+            </div> : <div>
+              <div>说明中文1</div>
+              <div>说明中文2</div>
+              <div>说明中文3</div>
+              <div>说明中文4</div>
+            </div>
+          }
+        </Modal>
         <div className="text-gray-400 text-sm text-center py-6 mt-4">
           <div className="mb-6">
             <FormattedMessage id="tips"></FormattedMessage>

@@ -8,7 +8,7 @@
   "step1": "Benign VS Malignant",
   "stepV1": "* Cut-off value 0.747",
   "step2": "Pre-invasive VS Invasive",
-  "stepV2": "* Cut-off value 0.55",
+  "stepV2": "* Cut-off value 0.562",
   "step3": "Degree of Differentiation",
   "task1": "TASK1",
   "task2": "TASK2",
@@ -16,7 +16,9 @@
   "result1": "Malignant Rate：{value}%",
   "result2": "The probability of invasive：{value}%",
   "result3": "Grade I：{valueHigh}%, Grade II：{valueMid}%, Grade III：{valueLow}%",
-  "buttonStart": "Start Calculation",
+  "buttonStart1": "Start Calculation Step1",
+  "buttonStart2": "Start Calculation Step2",
+  "buttonStart3": "Start Calculation Step3",
   "buttonStop": "Stop Calculation",
   "gen": "Image generation in progress...",
   "noteT1": "Pre-invasive nodule include Adenocarcinoma in situ(AIS) and Minimally invasive adenocarcinoma(MIA).",
@@ -27,5 +29,7 @@
   "x": "X-axis",
   "y": "Y-axis",
   "z": "Z-axis",
-  "tips": "The predicted results are only for reference, NOT for final diagnosis. Please consult doctors for further advice."
+  "tips": "The predicted results are only for reference, NOT for final diagnosis. Please consult doctors for further advice.",
+  "help": "Download Manual",
+  "dialog": "I Agree"
 }
