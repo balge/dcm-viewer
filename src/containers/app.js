@@ -683,7 +683,7 @@ export default class App extends Component {
             </div>
           </div>
         </main>
-        <Modal width={620} title={locale === 'en-us' ? 'Privacy Statement' : '隐私声明'} visible={this.state.showDialog} onOk={() => this.setState({
+        <Modal width={620} title={locale === 'en-us' ? 'Statement' : '声明'} visible={this.state.showDialog} onOk={() => this.setState({
           showDialog: false
         })} onCancel={() => this.setState({
           showDialog: false
@@ -696,15 +696,17 @@ export default class App extends Component {
         ]}>
           {
             locale === 'en-us' ? <div>
-              <div>说明英文1</div>
-              <div>说明英文2</div>
-              <div>说明英文3</div>
-              <div>说明英文4</div>
+              <div>1、This platform can be used without registration and does not obtain any users’ personal information</div>
+              <div>2、The user shall guarantee that she/he has legal rights to the uploaded CT image data in DICOM format, and shall guarantee that it is only used for scientific research, auxiliary diagnosis and other legitimate, legal and non-commercial purposes</div>
+              <div>3、The platform has desensitized the sensitive information in the CT image data uploaded by the user. The platform only reads and processes the necessary technical data, but does not read and process any other sensitive information that may identify the relevant subject.</div>
+              <div>4、The platform will permanently delete relevant data within 6 hours after the user uploads the CT image data, and will not keep any copies and backups</div>
+              <div>5、The predicted results provide by the platform are only for reference, NOT for final diagnosis. Please consult doctors for further advice.</div>
             </div> : <div>
-              <div>说明中文1</div>
-              <div>说明中文2</div>
-              <div>说明中文3</div>
-              <div>说明中文4</div>
+              <div>1.	本平台无需注册即可使用，不获取使用方的任何个人信息。</div>
+              <div>2.	使用方应保证对所上传的DICOM格式的CT数据拥有合法的权利，且应保证仅为科学研究、辅助诊断等正当、合法且非商业性目的使用本平台。</div>
+              <div>3.	本平台已采取技术手段对于使用方上载的CT数据中的敏感信息进行脱敏处理，即平台仅读取和处理必要的技术性数据，不读取和处理其他任何可能识别相关主体的任何敏感信息。</div>
+              <div>4.	本平台将在使用方上传CT数据后6小时内永久删除相关数据，且不留存任何副本和备份。</div>
+              <div>5.	本平台所提供的相关评估结果仅供参考，具体诊断应以专业医疗意见为准。</div>
             </div>
           }
         </Modal>
