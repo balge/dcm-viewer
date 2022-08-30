@@ -547,9 +547,16 @@ export default class App extends Component {
                         htmlType="submit"
                         disabled={!this.state.imageIds.length}
                       >
-                        {this.state.currStep === 1 ? (
+                        {this.state.currStep === 1 &&
+                          this.state.tasks.task1 &&
+                          this.state.tasks.task2 &&
+                          !this.state.recalculate ? (
                           <FormattedMessage id="buttonStart2"></FormattedMessage>
-                        ) : this.state.currStep === 2 ? (
+                        ) : this.state.currStep === 2 &&
+                          this.state.tasks.task1 &&
+                          this.state.tasks.task2 &&
+                          this.state.tasks.task3 &&
+                          !this.state.recalculate ? (
                           <FormattedMessage id="buttonStart3"></FormattedMessage>
                         ) : (
                           <FormattedMessage id="buttonStart1"></FormattedMessage>
