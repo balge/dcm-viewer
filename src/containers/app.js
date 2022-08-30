@@ -5,8 +5,11 @@ import api from '../api'
 import { helpers } from '../helpers'
 import cornerstone from 'cornerstone-core'
 import { FormattedMessage } from 'react-intl'
-import { CloudUploadOutlined, SoundOutlined, QuestionCircleOutlined } from '@ant-design/icons'
-
+import {
+  CloudUploadOutlined,
+  SoundOutlined,
+  QuestionCircleOutlined,
+} from '@ant-design/icons'
 
 const { Step } = Steps
 const { TaskQueue, RandomNum } = helpers
@@ -343,21 +346,36 @@ export default class App extends Component {
                       multiple
                       onChange={onChange}
                       onClick={(e) => {
-                        e.target.value = ""
+                        e.target.value = ''
                       }}
                     />
                   </div>
-                  <div className='w-5 ml-4 text-lg cursor-pointer' onClick={() => this.setState({
-                    showDialog: true
-                  })}>
+                  <div
+                    className="w-5 ml-4 text-lg cursor-pointer"
+                    onClick={() =>
+                      this.setState({
+                        showDialog: true,
+                      })
+                    }
+                  >
                     <QuestionCircleOutlined />
                   </div>
                 </div>
                 <div>
-                  <Button size="large"><a target="_blank" href={locale === 'en-us' ? 'https://seeyourlung.com.cn/upload/manual/English_manual.pdf' : 'https://seeyourlung.com.cn/upload/manual/Chinese_manual.pdf'}>
-                    <FormattedMessage id="help"></FormattedMessage>
-                  </a></Button>
-                </div></div>
+                  <Button size="large">
+                    <a
+                      target="_blank"
+                      href={
+                        locale === 'en-us'
+                          ? 'https://seeyourlung.com.cn/upload/manual/English_manual.pdf'
+                          : 'https://seeyourlung.com.cn/upload/manual/Chinese_manual.pdf'
+                      }
+                    >
+                      <FormattedMessage id="help"></FormattedMessage>
+                    </a>
+                  </Button>
+                </div>
+              </div>
               {this.state.precent && this.state.uploading ? (
                 <div className="w-full block mt-3 relative h-1 bg-gray-300">
                   <div
@@ -515,8 +533,8 @@ export default class App extends Component {
                     {this.state.calcLoading ? (
                       <Button
                         size="large"
-                        type="primary"
                         block
+                        danger
                         onClick={() => onCancel()}
                       >
                         <FormattedMessage id="buttonStop"></FormattedMessage>
@@ -529,9 +547,13 @@ export default class App extends Component {
                         htmlType="submit"
                         disabled={!this.state.imageIds.length}
                       >
-                        {
-                          this.state.currStep === 1 ? <FormattedMessage id="buttonStart2"></FormattedMessage> : this.state.currStep === 2 ? <FormattedMessage id="buttonStart3"></FormattedMessage> : <FormattedMessage id="buttonStart1"></FormattedMessage>
-                        }
+                        {this.state.currStep === 1 ? (
+                          <FormattedMessage id="buttonStart2"></FormattedMessage>
+                        ) : this.state.currStep === 2 ? (
+                          <FormattedMessage id="buttonStart3"></FormattedMessage>
+                        ) : (
+                          <FormattedMessage id="buttonStart1"></FormattedMessage>
+                        )}
                       </Button>
                     )}
                   </Form.Item>
@@ -684,32 +706,79 @@ export default class App extends Component {
             </div>
           </div>
         </main>
-        <Modal width={620} title={locale === 'en-us' ? 'Statement' : '声明'} visible={this.state.showDialog} onOk={() => this.setState({
-          showDialog: false
-        })} onCancel={() => this.setState({
-          showDialog: false
-        })} footer={[
-          <Button onClick={() => this.setState({
-            showDialog: false
-          })}>
-            <FormattedMessage id="dialog"></FormattedMessage>
-          </Button>
-        ]}>
-          {
-            locale === 'en-us' ? <div>
-              <div>1、This platform can be used without registration and does not obtain any users’ personal information</div>
-              <div>2、The user shall guarantee that she/he has legal rights to the uploaded CT image data in DICOM format, and shall guarantee that it is only used for scientific research, auxiliary diagnosis and other legitimate, legal and non-commercial purposes</div>
-              <div>3、The platform has desensitized the sensitive information in the CT image data uploaded by the user. The platform only reads and processes the necessary technical data, but does not read and process any other sensitive information that may identify the relevant subject.</div>
-              <div>4、The platform will permanently delete relevant data within 6 hours after the user uploads the CT image data, and will not keep any copies and backups</div>
-              <div>5、The predicted results provide by the platform are only for reference, NOT for final diagnosis. Please consult doctors for further advice.</div>
-            </div> : <div>
-              <div>1.	本平台无需注册即可使用，不获取使用方的任何个人信息。</div>
-              <div>2.	使用方应保证对所上传的DICOM格式的CT数据拥有合法的权利，且应保证仅为科学研究、辅助诊断等正当、合法且非商业性目的使用本平台。</div>
-              <div>3.	本平台已采取技术手段对于使用方上载的CT数据中的敏感信息进行脱敏处理，即平台仅读取和处理必要的技术性数据，不读取和处理其他任何可能识别相关主体的任何敏感信息。</div>
-              <div>4.	本平台将在使用方上传CT数据后6小时内永久删除相关数据，且不留存任何副本和备份。</div>
-              <div>5.	本平台所提供的相关评估结果仅供参考，具体诊断应以专业医疗意见为准。</div>
-            </div>
+        <Modal
+          width={620}
+          title={locale === 'en-us' ? 'Statement' : '声明'}
+          visible={this.state.showDialog}
+          onOk={() =>
+            this.setState({
+              showDialog: false,
+            })
           }
+          onCancel={() =>
+            this.setState({
+              showDialog: false,
+            })
+          }
+          footer={[
+            <Button
+              onClick={() =>
+                this.setState({
+                  showDialog: false,
+                })
+              }
+            >
+              <FormattedMessage id="dialog"></FormattedMessage>
+            </Button>,
+          ]}
+        >
+          {locale === 'en-us' ? (
+            <div>
+              <div>
+                1. This platform can be used without registration and does not
+                acquire any personal information of the users.
+              </div>
+              <div>
+                2. The users have the legal right to upload CT image data in
+                DICOM format, and shall guarantee that the platform is only used
+                for legitimate, legal and non-commercial purposes such as
+                scientific research and auxiliary diagnosis.
+              </div>
+              <div>
+                3. The platform has desensitized the sensitive information in
+                the CT image data uploaded by the users. That is, the platform
+                only reads and processes the necessary technical data, and does
+                not read and process any other sensitive information that may
+                identify the relevant subject.
+              </div>
+              <div>
+                4. The platform will permanently delete the relevant data within
+                6 hours after the user uploads the CT image data, and will not
+                retain any copies and backups.
+              </div>
+              <div>
+                5. The predicted results provide by the platform are only for
+                reference, NOT for final diagnosis. Please consult doctors for
+                further medical advice.
+              </div>
+            </div>
+          ) : (
+            <div>
+              <div>1.本平台无需注册即可使用，不获取使用方的任何个人信息。</div>
+              <div>
+                2.使用方应保证对所上传的DICOM格式的CT数据拥有合法的权利，且应保证仅为科学研究、辅助诊断等正当、合法且非商业性目的使用本平台。
+              </div>
+              <div>
+                3.本平台已采取技术手段对于使用方上载的CT数据中的敏感信息进行脱敏处理，即平台仅读取和处理必要的技术性数据，不读取和处理其他任何可能识别相关主体的任何敏感信息。
+              </div>
+              <div>
+                4.本平台将在使用方上传CT数据后6小时内永久删除相关数据，且不留存任何副本和备份。
+              </div>
+              <div>
+                5.本平台所提供的相关评估结果仅供参考，具体诊断应以专业医疗意见为准。
+              </div>
+            </div>
+          )}
         </Modal>
         <div className="text-gray-400 text-sm text-center py-6 mt-4">
           <div className="mb-6">

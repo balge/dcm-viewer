@@ -6,7 +6,7 @@
   "uploadDrag": "Drag File Folder Here",
   "uploadInput": "Please Select A File Folder",
   "step1": "Benign VS Malignant",
-  "stepV1": "* Cut-off value 0.67",
+  "stepV1": "* Cut-off value 0.747",
   "step2": "Pre-invasive VS Invasive",
   "stepV2": "* Cut-off value 0.562",
   "step3": "Degree of Differentiation",
