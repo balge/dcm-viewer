@@ -31,5 +31,10 @@
   "z": "Z-axis",
   "tips": "The predicted results are only for reference, NOT for final diagnosis. Please consult doctors for further advice.",
   "help": "Download Manual",
-  "dialog": "I Agree"
+  "dialog": "I Agree",
+  "name1": "Ying Ji",
+  "company1": "Beijing Chao-Yang Hospital",
+  "name2": "Jing Zhou",
+  "company2": "Renmin University of China",
+  "contact": "Contact Us: jing.zhou@ruc.edu.cn"
 }

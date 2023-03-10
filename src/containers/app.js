@@ -318,6 +318,24 @@ export default class App extends Component {
           <h1 className="text-4xl font-bold leading-tight text-gray-900 text-center mb-6">
             <FormattedMessage id="title"></FormattedMessage>
           </h1>
+          {/* <div className="flex justify-center items-center">
+            <div className="mx-2 text-center">
+              <div className="text-base text-gray-900 font-semibold transform scale-110">
+                <FormattedMessage id="name1"></FormattedMessage>
+              </div>
+              <div className="text-sm text-gray-600 mt-1">
+                <FormattedMessage id="company1"></FormattedMessage>
+              </div>
+            </div>
+            <div className="mx-2 text-center">
+              <div className="text-base text-gray-800 font-semibold">
+                <FormattedMessage id="name2"></FormattedMessage>
+              </div>
+              <div className="text-sm text-gray-600 mt-1">
+                <FormattedMessage id="company2"></FormattedMessage>
+              </div>
+            </div>
+          </div> */}
         </header>
         <main className="w-full mx-auto grid grid-cols-2 gap-10 px-4">
           <div>
@@ -548,9 +566,9 @@ export default class App extends Component {
                         disabled={!this.state.imageIds.length}
                       >
                         {this.state.currStep === 1 &&
-                          this.state.tasks.task1 &&
-                          this.state.tasks.task2 &&
-                          !this.state.recalculate ? (
+                        this.state.tasks.task1 &&
+                        this.state.tasks.task2 &&
+                        !this.state.recalculate ? (
                           <FormattedMessage id="buttonStart2"></FormattedMessage>
                         ) : this.state.currStep === 2 &&
                           this.state.tasks.task1 &&
@@ -790,6 +808,9 @@ export default class App extends Component {
         <div className="text-gray-400 text-sm text-center py-6 mt-4">
           <div className="mb-6">
             <FormattedMessage id="tips"></FormattedMessage>
+          </div>
+          <div className="mb-6">
+            <FormattedMessage id="contact"></FormattedMessage>
           </div>
           <a
             className="text-gray-400"
