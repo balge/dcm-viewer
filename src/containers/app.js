@@ -811,6 +811,12 @@ export default class App extends Component {
           </div>
           <div className="mb-6">
             <FormattedMessage id="contact"></FormattedMessage>
+            <span className="ml-2">
+              <FormattedMessage id="email1"></FormattedMessage>
+            </span>
+            <span className="ml-4">
+              <FormattedMessage id="email2"></FormattedMessage>
+            </span>
           </div>
           <a
             className="text-gray-400"

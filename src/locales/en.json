@@ -36,5 +36,7 @@
   "company1": "Beijing Chao-Yang Hospital",
   "name2": "Jing Zhou",
   "company2": "Renmin University of China",
-  "contact": "Contact Us: jing.zhou@ruc.edu.cn ying.ji@163.com"
+  "contact": "Contact Us:",
+  "email1": "jing.zhou@ruc.edu.cn",
+  "email2": "ying.ji@163.com"
 }
