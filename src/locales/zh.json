@@ -8,7 +8,7 @@
   "step1": "良性 VS 恶性",
   "stepV1": "* 阈值 0.747",
   "step2": "浸润前病变 VS 浸润性病变",
-  "stepV2": "* 阈值 0.562",
+  "stepV2": "* 阈值 0.46",
   "step3": "病理亚型分化程度预测",
   "task1": "预测1",
   "task2": "预测2",
@@ -36,5 +36,5 @@
   "company1": "首都医科大学附属北京朝阳医院",
   "name2": "周静",
   "company2": "中国人民大学",
-  "contact": "联系我们：jing.zhou@ruc.edu.cn"
+  "contact": "联系我们：jing.zhou@ruc.edu.cn ying.ji@163.com"
 }

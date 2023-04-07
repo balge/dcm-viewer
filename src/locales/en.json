@@ -8,7 +8,7 @@
   "step1": "Benign VS Malignant",
   "stepV1": "* Cut-off value 0.747",
   "step2": "Pre-invasive VS Invasive",
-  "stepV2": "* Cut-off value 0.562",
+  "stepV2": "* Cut-off value 0.46",
   "step3": "Degree of Differentiation",
   "task1": "TASK1",
   "task2": "TASK2",
@@ -36,5 +36,5 @@
   "company1": "Beijing Chao-Yang Hospital",
   "name2": "Jing Zhou",
   "company2": "Renmin University of China",
-  "contact": "Contact Us: jing.zhou@ruc.edu.cn"
+  "contact": "Contact Us: jing.zhou@ruc.edu.cn ying.ji@163.com"
 }
