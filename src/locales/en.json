@@ -29,7 +29,7 @@
   "x": "X-axis",
   "y": "Y-axis",
   "z": "Z-axis",
-  "tips": "The predicted results are only for reference, NOT for final diagnosis. Please consult doctors for further advice.",
+  "tips": "The proposed AI algorithm has not been certified and can thus not be used for clinical use",
   "help": "Download Manual",
   "dialog": "I Agree",
   "name1": "Ying Ji",
@@ -38,5 +38,6 @@
   "company2": "Renmin University of China",
   "contact": "Contact Us:",
   "email1": "jing.zhou@ruc.edu.cn",
-  "email2": "ying.ji@163.com"
+  "email2": "ying.ji@163.com",
+  "tutorial": "For a video tutorial, please refer to "
 }

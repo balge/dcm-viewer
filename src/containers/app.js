@@ -11,6 +11,8 @@ import {
   QuestionCircleOutlined,
 } from '@ant-design/icons'
 
+import Cookies from 'js-cookie'
+
 const { Step } = Steps
 const { TaskQueue, RandomNum } = helpers
 let timer = null
@@ -79,6 +81,16 @@ export default class App extends Component {
       // { name: 'StackScrollMultiTouch', mode: 'active' },
     ],
   }
+  componentDidMount() {
+    const dialoged = Cookies.get('dialoged') === 'true'
+    this.setState({
+      showDialog: !dialoged,
+    })
+    Cookies.set('dialoged', 'true', {
+      expires: 0.3333,
+    })
+  }
+
   render() {
     const { locale } = this.props
     const ERRORS = {
@@ -466,32 +478,43 @@ export default class App extends Component {
                   </div>
                 </div>
               ) : (
-                <div className="w-full mt-4 bg-gray-400 bg-opacity-10 rounded-xl py-52 text-center relative">
-                  <div className="text-gray-500 text-5xl">
-                    <CloudUploadOutlined />
+                <div>
+                  <div className="text-base text-black mt-4">
+                    <FormattedMessage id="tutorial"></FormattedMessage>
+                    <a
+                      href="https://github.com/zhoujing89/EMV-3D-CNN"
+                      target="_blank"
+                    >
+                      https://github.com/zhoujing89/EMV-3D-CNN
+                    </a>
                   </div>
-                  <div className="text-lg text-gray-500 mt-4">
-                    {this.state.uploading ? (
-                      <div>
-                        <FormattedMessage id="gen"></FormattedMessage>
-                      </div>
-                    ) : (
-                      <div>
-                        <p>
-                          <FormattedMessage id="uploadDrag"></FormattedMessage>
-                        </p>
-                      </div>
+                  <div className="w-full mt-4 bg-gray-400 bg-opacity-10 rounded-xl py-40 text-center relative">
+                    <div className="text-gray-500 text-5xl">
+                      <CloudUploadOutlined />
+                    </div>
+                    <div className="text-lg text-gray-500 mt-4">
+                      {this.state.uploading ? (
+                        <div>
+                          <FormattedMessage id="gen"></FormattedMessage>
+                        </div>
+                      ) : (
+                        <div>
+                          <p>
+                            <FormattedMessage id="uploadDrag"></FormattedMessage>
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                    {!this.state.uploading && (
+                      <input
+                        className="opacity-0 absolute left-0 top-0  bottom-0 right-0 z-10"
+                        type="file"
+                        webkitdirectory="webkitdirectory"
+                        multiple
+                        onChange={onChange}
+                      />
                     )}
                   </div>
-                  {!this.state.uploading && (
-                    <input
-                      className="opacity-0 absolute left-0 top-0  bottom-0 right-0 z-10"
-                      type="file"
-                      webkitdirectory="webkitdirectory"
-                      multiple
-                      onChange={onChange}
-                    />
-                  )}
                 </div>
               )}
             </div>
